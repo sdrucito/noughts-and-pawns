@@ -13,6 +13,7 @@ On each turn a player can:
 *or*
 
 - move a piece already on the board.
+
 Each piece moves and captures like in chess: 
 - Pawn: moves forward by one square, captures diagonally. When it reaches the edge of the board, its movement direction is reversed;
 - Rook: moves in straight lines;

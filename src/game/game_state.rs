@@ -3,7 +3,7 @@ use crate::game::player::{Player, PlayerState};
 
 pub const BOARD_SIZE: usize = 4;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Position {
     pub x: usize,
     pub y: usize,
@@ -47,15 +47,14 @@ impl GameState {
             black: PlayerState::new(Player::Black)
         }
     }
-    pub fn current_player_state(&self) -> &PlayerState {
-        match self.current_player {
+    pub fn player_state(&self, player: Player) -> &PlayerState {
+        match player {
             Player::White => &self.white,
             Player::Black => &self.black,
         }
     }
-
-    pub fn current_player_state_mut(&mut self) -> &mut PlayerState {
-        match self.current_player {
+    pub fn player_state_mut(&mut self, player: Player) -> &mut PlayerState {
+        match player {
             Player::White => &mut self.white,
             Player::Black => &mut self.black,
         }
