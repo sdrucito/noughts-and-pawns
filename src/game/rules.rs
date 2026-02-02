@@ -65,7 +65,9 @@ fn validate_move_piece(state: &mut GameState, from: Position, to: Position) -> R
 
     match piece.kind {
         PieceKind::Rook => validate_rook_move(state, from, to),
-        _ => Err("Movement for this piece not implemented yet".to_string()),
+        PieceKind::Bishop => validate_bishop_move(state, from, to),
+        PieceKind::Knight => validate_knight_move(state, from, to),
+        PieceKind::Pawn => validate_knight_move(state, from, to)
     }
 }
 fn validate_rook_move(state: &mut GameState, from: Position, to: Position) -> Result<(), String> {
