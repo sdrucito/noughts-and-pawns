@@ -1,6 +1,6 @@
 use crate::game::player::Player;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum PieceKind {
     Pawn,
     Rook,
@@ -8,7 +8,7 @@ pub enum PieceKind {
     Bishop,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Piece {
     pub owner: Player,
     pub kind: PieceKind,

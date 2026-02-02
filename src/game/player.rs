@@ -1,6 +1,6 @@
 use crate::game::piece::PieceKind;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Player {
     White,
     Black,
