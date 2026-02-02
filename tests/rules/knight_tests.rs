@@ -3,116 +3,118 @@ use noughts_and_pawns::game::piece::PieceKind;
 use noughts_and_pawns::game::player::Player;
 use noughts_and_pawns::game::rules::{apply_move, Move};
 
-/// Tests related to rook
-mod rook_tests {
+/// Tests related to knight
+mod knight_tests {
     use super::*;
 
-    /// A rook can move horizontally across an empty row
+    /// A knight can move in L-shaped pattern
     #[test]
-    fn rook_can_move_horizontally() {
+    fn knight_can_jump_over_pieces() {
         // Given
         let mut state = GameState::new();
 
         apply_move(&mut state, Move::PlacePiece {
-            kind: PieceKind::Rook,
-            position: Position { x: 0, y: 0 },
+            kind: PieceKind::Knight,
+            position: Position { x: 1, y: 1 },
         }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Pawn,
+            position: Position { x: 1, y: 2 },
+        }).unwrap();
+
         state.current_player = Player::White;
 
         // When
         let result = apply_move(&mut state, Move::MovePiece {
-            from: Position { x: 0, y: 0 },
-            to: Position { x: 3, y: 0 },
+            from: Position { x: 1, y: 1 },
+            to: Position { x: 2, y: 3 },
         });
 
         // Then
         assert!(result.is_ok());
     }
 
-    /// A rook cannot move diagonally
+    /// A knight cannot move in a non-L-shaped pattern
     #[test]
-    fn rook_cannot_move_diagonally() {
+    fn knight_cannot_move_non_l_shape() {
         // Given
         let mut state = GameState::new();
 
         apply_move(&mut state, Move::PlacePiece {
-            kind: PieceKind::Rook,
-            position: Position { x: 0, y: 0 },
+            kind: PieceKind::Knight,
+            position: Position { x: 1, y: 1 },
         }).unwrap();
+
         state.current_player = Player::White;
 
         // When
         let result = apply_move(&mut state, Move::MovePiece {
-            from: Position { x: 0, y: 0 },
-            to: Position { x: 1, y: 1 },
+            from: Position { x: 1, y: 1 },
+            to: Position { x: 2, y: 2 },
         });
 
         // Then
         assert!(result.is_err());
     }
 
-    /// A rook can capture an opponent's piece and return it to the owner's reserve
+    ///A knight can capture an opponent's piece and return it to the owner's reserve
     #[test]
-    fn rook_can_capture_opponent_piece() {
+    fn knight_can_capture() {
         // Given
         let mut state = GameState::new();
 
         apply_move(&mut state, Move::PlacePiece {
-            kind: PieceKind::Rook,
-            position: Position { x: 0, y: 0 },
+            kind: PieceKind::Knight,
+            position: Position { x: 1, y: 1 },
         }).unwrap();
+
         apply_move(&mut state, Move::PlacePiece {
             kind: PieceKind::Pawn,
-            position: Position { x: 0, y: 3 },
+            position: Position { x: 2, y: 3 },
         }).unwrap();
+
         state.current_player = Player::White;
 
         // When
         let result = apply_move(&mut state, Move::MovePiece {
-            from: Position { x: 0, y: 0 },
-            to: Position { x: 0, y: 3 },
+            from: Position { x: 1, y: 1 },
+            to: Position { x: 2, y: 3 },
         });
 
         // Then
         assert!(result.is_ok());
-        assert!(state.board.get(Position { x: 0, y: 3 }).is_some());
-        assert!(state.board.get(Position { x: 0, y: 0 }).is_none());
         assert!(state.black.has_piece(PieceKind::Pawn));
     }
 
-    /// A rook cannot move through or onto a square blocked by another piece
+    /// A knight cannot capture a piece owned by the same player
     #[test]
-    fn rook_cant_move_over_pieces() {
+    fn knight_cannot_capture_own_piece() {
         // Given
         let mut state = GameState::new();
 
         apply_move(&mut state, Move::PlacePiece {
-            kind: PieceKind::Rook,
-            position: Position { x: 0, y: 0 },
+            kind: PieceKind::Knight,
+            position: Position { x: 1, y: 1 },
         }).unwrap();
+
         state.current_player = Player::White;
+
         apply_move(&mut state, Move::PlacePiece {
             kind: PieceKind::Pawn,
-            position: Position { x: 0, y: 1 },
+            position: Position { x: 2, y: 3 },
         }).unwrap();
+
         state.current_player = Player::White;
 
         // When
-        let result1 = apply_move(&mut state, Move::MovePiece {
-            from: Position { x: 0, y: 0 },
-            to: Position { x: 0, y: 2 },
+        let result = apply_move(&mut state, Move::MovePiece {
+            from: Position { x: 1, y: 1 },
+            to: Position { x: 2, y: 3 },
         });
 
         // Then
-        assert!(result1.is_err());
-
-        // When
-        let result2 = apply_move(&mut state, Move::MovePiece {
-            from: Position { x: 0, y: 0 },
-            to: Position { x: 0, y: 1 },
-        });
-
-        // Then
-        assert!(result2.is_err());
+        assert!(result.is_err());
     }
+
 }
