@@ -108,8 +108,8 @@ mod rules_tests {
             position: Position { x: 1, y: 1 },
         };
         let white_move2 = Move::MovePiece {
-            from: Position { x: 1, y: 1 },
-            to: Position { x: 1, y: 1 },
+            from: Position { x: 0, y: 0 },
+            to: Position { x: 0, y: 0 },
         };
 
         // When
