@@ -1,5 +1,6 @@
-use crate::game::piece::{Piece, PieceKind};
-use crate::game::game_state::{GameState, Position};
+use crate::game::piece::{PawnDirection, Piece, PieceKind};
+use crate::game::game_state::{BOARD_SIZE, GameState, Position};
+use crate::game::player::Player;
 
 #[derive(Debug)]
 pub enum Move {
@@ -23,10 +24,18 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
                 return Err("That piece is not available in your reserve".to_string());
             }
 
+            let pawn_dir = if kind == PieceKind::Pawn {
+                Some(PawnDirection::Forward)
+            } else {
+                None
+            };
+
             let piece = Piece {
                 owner: state.current_player,
                 kind,
+                pawn_dir,
             };
+
             state.board.set(position, Some(piece));
 
             state.player_state_mut(state.current_player).remove_piece(kind);
@@ -36,10 +45,22 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
         Move::MovePiece { from, to } => {
             validate_move_piece(state, from, to)?;
 
-            let piece = state.board.get(from).unwrap();
+            let mut piece = state.board.get(from).unwrap();
 
             if let Some(captured) = state.board.get(to) {
                 state.player_state_mut(captured.owner).add_piece(captured.kind);
+            }
+
+            if piece.kind == PieceKind::Pawn {
+                let reached_edge = (piece.owner == Player::White && to.y == BOARD_SIZE - 1)
+                        || (piece.owner == Player::Black && to.y == 0);
+
+                if reached_edge {
+                    piece.pawn_dir = Some(match piece.pawn_dir.unwrap() {
+                        PawnDirection::Forward => PawnDirection::Backward,
+                        PawnDirection::Backward => PawnDirection::Forward,
+                    });
+                }
             }
 
             state.board.set(from, None);
@@ -48,7 +69,6 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
             state.switch_turn();
             Ok(())
         }
-
     }
 }
 fn validate_move_piece(state: &mut GameState, from: Position, to: Position) -> Result<(), String> {
@@ -101,11 +121,7 @@ fn validate_rook_move(state: &mut GameState, from: Position, to: Position) -> Re
     Ok(())
 }
 
-fn validate_bishop_move(
-    state: &GameState,
-    from: Position,
-    to: Position,
-) -> Result<(), String> {
+fn validate_bishop_move(state: &GameState, from: Position, to: Position) -> Result<(), String> {
     let dx = to.x as isize - from.x as isize;
     let dy = to.y as isize - from.y as isize;
 
@@ -135,11 +151,7 @@ fn validate_bishop_move(
 
     Ok(())
 }
-fn validate_knight_move(
-    state: &GameState,
-    from: Position,
-    to: Position,
-) -> Result<(), String> {
+fn validate_knight_move(state: &GameState, from: Position, to: Position) -> Result<(), String> {
     let dx = (to.x as isize - from.x as isize).abs();
     let dy = (to.y as isize - from.y as isize).abs();
 
@@ -155,4 +167,39 @@ fn validate_knight_move(
     }
 
     Ok(())
+}
+
+fn validate_pawn_move(state: &GameState, from: Position, to: Position) -> Result<(), String> {
+    let piece = state.board.get(from).unwrap();
+    let dir = piece.pawn_dir.unwrap();
+
+    let dx = to.x as isize - from.x as isize;
+    let dy = to.y as isize - from.y as isize;
+
+    let mut forward = match (piece.owner, dir) {
+        (Player::White, PawnDirection::Forward) => 1,
+        (Player::White, PawnDirection::Backward) => -1,
+        (Player::Black, PawnDirection::Forward) => -1,
+        (Player::Black, PawnDirection::Backward) => 1,
+    };
+
+    if dx == 0 && dy == forward {
+        if state.board.get(to).is_some() {
+            return Err("Pawn cannot move forward into an occupied square".to_string());
+        }
+        return Ok(());
+    }
+
+    if dy == forward && dx.abs() == 1 {
+        return if let Some(dest_piece) = state.board.get(to) {
+            if dest_piece.owner == piece.owner {
+                return Err("Cannot capture your own piece".to_string());
+            }
+            Ok(())
+        } else {
+            Err("Pawn can only move diagonally when capturing".to_string())
+        }
+    }
+
+    Err("Invalid pawn move".to_string())
 }
