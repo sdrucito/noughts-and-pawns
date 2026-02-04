@@ -52,8 +52,11 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
             }
 
             if piece.kind == PieceKind::Pawn {
-                let reached_edge = (piece.owner == Player::White && to.y == BOARD_SIZE - 1)
-                        || (piece.owner == Player::Black && to.y == 0);
+                let forward = pawn_forward_delta(&piece);
+                let next_y = to.y as isize + forward;
+
+                let reached_edge =
+                    next_y < 0 || next_y >= BOARD_SIZE as isize;
 
                 if reached_edge {
                     piece.pawn_dir = Some(match piece.pawn_dir.unwrap() {
@@ -65,6 +68,10 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
 
             state.board.set(from, None);
             state.board.set(to, Some(piece));
+
+            if check_win_condition(state, state.current_player) {
+                return Err(format!("{:?} wins the game!", state.current_player));
+            }
 
             state.switch_turn();
             Ok(())
@@ -87,7 +94,7 @@ fn validate_move_piece(state: &mut GameState, from: Position, to: Position) -> R
         PieceKind::Rook => validate_rook_move(state, from, to),
         PieceKind::Bishop => validate_bishop_move(state, from, to),
         PieceKind::Knight => validate_knight_move(state, from, to),
-        PieceKind::Pawn => validate_knight_move(state, from, to)
+        PieceKind::Pawn => validate_pawn_move(state, from, to)
     }
 }
 fn validate_rook_move(state: &mut GameState, from: Position, to: Position) -> Result<(), String> {
@@ -171,17 +178,11 @@ fn validate_knight_move(state: &GameState, from: Position, to: Position) -> Resu
 
 fn validate_pawn_move(state: &GameState, from: Position, to: Position) -> Result<(), String> {
     let piece = state.board.get(from).unwrap();
-    let dir = piece.pawn_dir.unwrap();
 
     let dx = to.x as isize - from.x as isize;
     let dy = to.y as isize - from.y as isize;
 
-    let mut forward = match (piece.owner, dir) {
-        (Player::White, PawnDirection::Forward) => 1,
-        (Player::White, PawnDirection::Backward) => -1,
-        (Player::Black, PawnDirection::Forward) => -1,
-        (Player::Black, PawnDirection::Backward) => 1,
-    };
+    let forward = pawn_forward_delta(&piece);
 
     if dx == 0 && dy == forward {
         if state.board.get(to).is_some() {
@@ -198,8 +199,46 @@ fn validate_pawn_move(state: &GameState, from: Position, to: Position) -> Result
             Ok(())
         } else {
             Err("Pawn can only move diagonally when capturing".to_string())
-        }
+        };
     }
 
     Err("Invalid pawn move".to_string())
+}
+
+fn pawn_forward_delta(piece: &Piece) -> isize {
+    match (piece.owner, piece.pawn_dir.unwrap()) {
+        (Player::White, PawnDirection::Forward) => 1,
+        (Player::White, PawnDirection::Backward) => -1,
+        (Player::Black, PawnDirection::Forward) => -1,
+        (Player::Black, PawnDirection::Backward) => 1,
+    }
+}
+
+pub fn check_win_condition(state: &GameState, player: Player) -> bool {
+    // Rows
+    for y in 0..BOARD_SIZE {
+        if (0..BOARD_SIZE).all(|x| cell_belongs_to_player(state, x, y, player)) {
+            return true;
+        }
+    }
+    // Columns
+    for x in 0..BOARD_SIZE {
+        if (0..BOARD_SIZE).all(|y| cell_belongs_to_player(state, x, y, player)) {
+            return true;
+        }
+    }
+    // Diagonals
+    if (0..BOARD_SIZE).all(|i| cell_belongs_to_player(state, i, i, player)) {
+        return true;
+    }
+    if (0..BOARD_SIZE).all(|i| cell_belongs_to_player(state, BOARD_SIZE - 1 - i, i, player)) {
+        return true;
+    }
+
+    false
+}
+
+fn cell_belongs_to_player(state: &GameState, x: usize, y: usize, player: Player) -> bool {
+    state.board.get(Position { x, y })
+        .map(|p| p.owner == player).unwrap_or(false)
 }

@@ -186,4 +186,59 @@ mod pawn_tests {
         // Then
         assert!(result.is_err());
     }
+    /// A black pawn moves forward, reaches the edge, reverses direction,
+    /// traverses the board backward and reverses again
+    #[test]
+    fn black_pawn_performs_full_ping_pong_movement() {
+        // Given
+        let mut state = GameState::new();
+
+        // When
+        state.current_player = Player::Black;
+        apply_move(&mut state,Move::PlacePiece {
+                kind: PieceKind::Pawn,
+                position: Position { x: 1, y: 3 },
+            }).unwrap();
+
+        state.current_player = Player::Black;
+        apply_move(&mut state, Move::MovePiece {
+                from: Position { x: 1, y: 3 },
+                to: Position { x: 1, y: 2 },
+            }).unwrap();
+
+        state.current_player = Player::Black;
+        apply_move(&mut state, Move::MovePiece {
+                from: Position { x: 1, y: 2 },
+                to: Position { x: 1, y: 1 },
+            }).unwrap();
+
+        state.current_player = Player::Black;
+        apply_move(&mut state, Move::MovePiece {
+                from: Position { x: 1, y: 1 },
+                to: Position { x: 1, y: 0 },
+            }) .unwrap();
+
+        state.current_player = Player::Black;
+        apply_move(&mut state, Move::MovePiece {
+                from: Position { x: 1, y: 0 },
+                to: Position { x: 1, y: 1 },
+            }).unwrap();
+
+        state.current_player = Player::Black;
+        apply_move(&mut state,Move::MovePiece {
+                from: Position { x: 1, y: 1 },
+                to: Position { x: 1, y: 2 },
+            }).unwrap();
+
+        state.current_player = Player::Black;
+        let result = apply_move(&mut state,
+            Move::MovePiece {
+                from: Position { x: 1, y: 2 },
+                to: Position { x: 1, y: 3 },
+            });
+
+        // Then
+        assert!(result.is_ok());
+    }
+
 }
