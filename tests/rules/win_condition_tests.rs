@@ -1,8 +1,8 @@
+use noughts_and_pawns::game::game_state::{GameState, Position};
+use noughts_and_pawns::game::piece::{Piece, PieceKind};
+use noughts_and_pawns::game::player::Player;
+use noughts_and_pawns::game::rules::check_win_condition;
 mod win_condition_tests {
-    use noughts_and_pawns::game::game_state::{GameState, Position};
-    use noughts_and_pawns::game::piece::{Piece, PieceKind};
-    use noughts_and_pawns::game::player::Player;
-    use noughts_and_pawns::game::rules::check_win_condition;
     use super::*;
 
     /// A player wins with four pieces aligned horizontally
