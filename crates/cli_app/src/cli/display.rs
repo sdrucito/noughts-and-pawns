@@ -1,6 +1,6 @@
-use crate::game::game_state::{GameState, Position, BOARD_SIZE};
-use crate::game::piece::PieceKind;
-use crate::game::player::Player;
+use game_core::game::game_state::{BOARD_SIZE, GameState, Position};
+use game_core::game::piece::PieceKind;
+use game_core::game::player::{Player, PlayerState};
 
 /// Prints the game instructions at startup
 pub fn print_instructions() {
@@ -91,7 +91,7 @@ fn piece_char(owner: Player, kind: PieceKind) -> char {
 
 /// Returns the symbol for a piece in the reserve (letter if available, '.' if not)
 fn reserve_symbol(
-    player_state: &crate::game::player::PlayerState,
+    player_state: &PlayerState,
     kind: PieceKind,
     white: bool,
 ) -> char {

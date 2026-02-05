@@ -1,12 +1,10 @@
 mod cli;
-mod game;
 
 use std::io::{self, Write};
-
 use cli::display::{print_game_state, print_instructions};
 use cli::input::parse_command;
-use game::game_state::GameState;
-use game::rules::apply_move;
+use game_core::game::game_state::GameState;
+use game_core::game::rules::apply_move;
 
 fn main() {
     let mut state = GameState::new();

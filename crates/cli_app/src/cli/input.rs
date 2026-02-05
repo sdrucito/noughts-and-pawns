@@ -1,6 +1,6 @@
-use crate::game::game_state::{Position, BOARD_SIZE};
-use crate::game::piece::PieceKind;
-use crate::game::rules::Move;
+use game_core::game::game_state::{BOARD_SIZE, Position};
+use game_core::game::piece::PieceKind;
+use game_core::game::rules::Move;
 
 /// Parses a user command into a Move
 pub fn parse_command(input: &String) -> Result<Move, String> {

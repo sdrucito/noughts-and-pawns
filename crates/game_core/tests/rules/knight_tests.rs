@@ -1,7 +1,7 @@
-use noughts_and_pawns::game::game_state::{GameState, Position};
-use noughts_and_pawns::game::piece::PieceKind;
-use noughts_and_pawns::game::player::Player;
-use noughts_and_pawns::game::rules::{apply_move, Move};
+use game_core::game::game_state::{GameState, Position};
+use game_core::game::piece::PieceKind;
+use game_core::game::player::Player;
+use game_core::game::rules::{apply_move, Move};
 
 /// Tests related to knight
 mod knight_tests {

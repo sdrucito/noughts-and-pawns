@@ -1,6 +1,6 @@
-use noughts_and_pawns::game::game_state::{GameState, Position};
-use noughts_and_pawns::game::piece::PieceKind;
-use noughts_and_pawns::game::player::Player;
+use game_core::game::game_state::{GameState, Position};
+use game_core::game::piece::PieceKind;
+use game_core::game::player::Player;
 
 /// Tests related to GameState
 mod game_state_tests {

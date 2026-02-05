@@ -1,0 +1,10 @@
+[package]
+name = "noughts-and-pawns-cli_app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+game_core = { path = "../game_core" }
+
+[build-dependencies]
+winresource = "0.1.30"

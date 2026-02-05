@@ -1,5 +1,5 @@
-use noughts_and_pawns::game::piece::PieceKind;
-use noughts_and_pawns::game::player::{Player, PlayerState, Reserve};
+use game_core::game::piece::PieceKind;
+use game_core::game::player::{Player, PlayerState, Reserve};
 
 /// Tests related to Player
 mod player_tests {
