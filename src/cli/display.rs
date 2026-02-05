@@ -16,7 +16,7 @@ pub fn print_instructions() {
     println!("  move <from> <to>           (e.g. move B2 B3)\n");
 
     println!("Pieces:");
-    println!("  pawn, rook, bishop, knight\n");
+    println!("  pawn (P/p), rook (R/r), knight (K/k), bishop (B/b)\n");
 }
 
 /// Prints the board with coordinates and player reserves
