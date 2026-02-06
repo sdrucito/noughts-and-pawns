@@ -55,4 +55,17 @@ mod player_tests {
         // Then
         assert!(black.has_piece(PieceKind::Knight));
     }
+
+    /// Check color of a new PlayerState
+    #[test]
+    fn get_player_color_from_player_state(){
+        // Given
+        let black = PlayerState::new(Player::Black);
+        let white = PlayerState::new(Player::White);
+
+        // Then
+        assert_eq!(black.get_color(),Player::Black);
+        assert_eq!(white.get_color(),Player::White);
+
+    }
 }

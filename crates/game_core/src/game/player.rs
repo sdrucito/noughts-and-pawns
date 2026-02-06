@@ -78,4 +78,8 @@ impl PlayerState{
     pub fn add_piece(&mut self, kind: PieceKind) {
         self.reserve.add_piece(kind);
     }
+
+    pub fn get_color(&self) -> Player {
+        self.color
+    }
 }

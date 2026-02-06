@@ -42,7 +42,7 @@ fn print_board_rows(state: &GameState) {
         // Left reserve (White)
         print!(
             "{} | {} ",
-            reserve_symbol(&state.white, row_piece_kind(y), true),
+            reserve_symbol(&state.white, row_piece_kind(y)),
             y + 1
         );
 
@@ -59,7 +59,7 @@ fn print_board_rows(state: &GameState) {
         println!(
             " {} | {}",
             y + 1,
-            reserve_symbol(&state.black, row_piece_kind(y), false)
+            reserve_symbol(&state.black, row_piece_kind(y))
         );
     }
 }
@@ -92,8 +92,7 @@ fn piece_char(owner: Player, kind: PieceKind) -> char {
 /// Returns the symbol for a piece in the reserve (letter if available, '.' if not)
 fn reserve_symbol(
     player_state: &PlayerState,
-    kind: PieceKind,
-    white: bool,
+    kind: PieceKind
 ) -> char {
     if player_state.has_piece(kind) {
         let c = match kind {
@@ -102,7 +101,10 @@ fn reserve_symbol(
             PieceKind::Knight => 'K',
             PieceKind::Bishop => 'B',
         };
-        if white { c } else { c.to_ascii_lowercase() }
+        match player_state.get_color() {
+            Player::White => {c}
+            Player::Black => {c.to_ascii_lowercase()}
+        }
     } else {
         '.'
     }
