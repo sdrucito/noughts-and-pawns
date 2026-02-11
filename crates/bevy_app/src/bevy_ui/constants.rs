@@ -1,0 +1,17 @@
+use bevy::color::Color;
+
+pub const APP_SIZE: u32= 640;
+
+pub(crate) const CELL_SIZE: u32 = 64;
+pub(crate) const GRID_NUMBER: u32 = 4;
+pub(crate) const BOARD_SIZE: u32 = CELL_SIZE*4;
+pub(crate) const HALF_BOARD_SIZE: u32 = CELL_SIZE*2;
+
+pub(crate) const WHITE_RESERVE_X: f32 = -192.0;
+pub(crate) const BLACK_RESERVE_X: f32 = 192.0;
+pub(crate) const BACKGROUND_Z: f32 = -10.0;
+pub(crate) const PIECE_Z:f32 = 10.0;
+
+
+pub(crate) const BLACK_QUAD: Color = Color::srgb(0.9, 0.9, 0.9);
+pub(crate) const WHITE_QUAD: Color = Color::srgb(0.7, 0.7, 0.7);

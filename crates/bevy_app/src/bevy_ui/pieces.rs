@@ -1,10 +1,7 @@
 use bevy::prelude::*;
 use game_core::game::piece::PieceKind;
 use game_core::game::player::Player;
-
-const WHITE_X: f32 = -192.0;
-const BLACK_X: f32 = 192.0;
-const Z:f32 = 10.0;
+use crate::bevy_ui::constants::{BLACK_RESERVE_X, WHITE_RESERVE_X, PIECE_Z};
 const RESERVE_LAYOUT: [ReserveSlot; 4] = [
     ReserveSlot { kind: PieceKind::Pawn,   y: 108.0 },
     ReserveSlot { kind: PieceKind::Rook,   y: 36.0 },
@@ -30,8 +27,8 @@ impl Plugin for PiecesPlugin {
 }
 
 fn spawn_reserve_pieces(mut commands: Commands, asset_server: Res<AssetServer>) {
-    spawn_side(&mut commands, asset_server.as_ref(), Player::White, WHITE_X);
-    spawn_side(&mut commands, asset_server.as_ref(), Player::Black, BLACK_X);
+    spawn_side(&mut commands, asset_server.as_ref(), Player::White, WHITE_RESERVE_X);
+    spawn_side(&mut commands, asset_server.as_ref(), Player::Black, BLACK_RESERVE_X);
 }
 
 fn spawn_side(commands: &mut Commands, asset_server: &AssetServer, player: Player, x: f32) {
@@ -40,7 +37,7 @@ fn spawn_side(commands: &mut Commands, asset_server: &AssetServer, player: Playe
 
         commands.spawn((
             Sprite::from_image(texture),
-            Transform::from_xyz(x, slot.y, Z),
+            Transform::from_xyz(x, slot.y, PIECE_Z),
             GlobalTransform::default(),
             PieceVisual {
                 owner: player,

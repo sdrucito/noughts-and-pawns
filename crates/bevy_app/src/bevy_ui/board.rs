@@ -1,5 +1,6 @@
 use bevy::camera::ScalingMode;
 use bevy::prelude::*;
+use crate::bevy_ui::constants::{APP_SIZE, BACKGROUND_Z, BLACK_QUAD, CELL_SIZE, GRID_NUMBER, HALF_BOARD_SIZE, WHITE_QUAD};
 
 pub struct BoardPlugin;
 
@@ -14,7 +15,7 @@ fn setup_board(mut commands: Commands, asset_server: Res<AssetServer>) {
         Camera2d,
         Projection::Orthographic(OrthographicProjection {
             scaling_mode: ScalingMode::FixedVertical {
-                viewport_height: 600.0,
+                viewport_height: APP_SIZE as f32,
             },
             ..OrthographicProjection::default_2d()
         }),
@@ -27,30 +28,26 @@ fn setup_board(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.spawn((
         Sprite::from_image(bg_handle),
-        Transform::from_xyz(0., 0., -10.0),
+        Transform::from_xyz(0., 0., BACKGROUND_Z),
         GlobalTransform::default(),
     ));
 
     // Board
-    let cell_size = 64.0;
-    let board_size = 4;
-    let half = cell_size * board_size as f32 / 2.0;
-
-    for y in 0..board_size {
-        for x in 0..board_size {
+    for y in 0..GRID_NUMBER {
+        for x in 0..GRID_NUMBER {
             let color = if (x + y) % 2 == 0 {
-                Color::srgb(0.9, 0.9, 0.9)
+                BLACK_QUAD
             } else {
-                Color::srgb(0.7, 0.7, 0.7)
+                WHITE_QUAD
             };
 
-            let world_x = x as f32 * cell_size - half + cell_size / 2.0;
-            let world_y = y as f32 * cell_size - half + cell_size / 2.0;
+            let world_x = x as f32 * CELL_SIZE as f32 - HALF_BOARD_SIZE as f32 + CELL_SIZE as f32/ 2.0;
+            let world_y = y as f32 * CELL_SIZE as f32 - HALF_BOARD_SIZE as f32 + CELL_SIZE as f32/ 2.0;
 
             commands.spawn((
                 Sprite {
                     color,
-                    custom_size: Some(Vec2::splat(cell_size)),
+                    custom_size: Some(Vec2::splat(CELL_SIZE as f32)),
                     ..default()
                 },
                 Transform::from_xyz(world_x, world_y, 0.0),
