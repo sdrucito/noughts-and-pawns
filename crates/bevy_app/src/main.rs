@@ -3,6 +3,7 @@ mod bevy_ui;
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use crate::bevy_ui::board::BoardPlugin;
+use crate::bevy_ui::pieces::PiecesPlugin;
 
 fn main() {
     App::new()
@@ -23,6 +24,6 @@ fn main() {
             })
 
         )
-        .add_plugins(BoardPlugin)
+        .add_plugins((BoardPlugin, PiecesPlugin))
         .run();
 }
