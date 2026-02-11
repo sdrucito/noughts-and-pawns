@@ -1,0 +1,11 @@
+[package]
+name = "noughts-and-pawns-bevy_app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+game_core = { path = "../game_core" }
+bevy = "0.18.0"
+
+[build-dependencies]
+winresource = "0.1.30"

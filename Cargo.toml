@@ -2,5 +2,5 @@
 members = [
     "crates/game_core",
     "crates/cli_app",
-    #"crates/bevy_app",
+    "crates/bevy_app",
 ]
