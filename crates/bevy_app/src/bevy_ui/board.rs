@@ -41,8 +41,8 @@ fn setup_board(mut commands: Commands, asset_server: Res<AssetServer>) {
                 WHITE_QUAD
             };
 
-            let world_x = x as f32 * CELL_SIZE as f32 - HALF_BOARD_SIZE as f32 + CELL_SIZE as f32/ 2.0;
-            let world_y = y as f32 * CELL_SIZE as f32 - HALF_BOARD_SIZE as f32 + CELL_SIZE as f32/ 2.0;
+            let world_x = x as f32 * CELL_SIZE - HALF_BOARD_SIZE + CELL_SIZE / 2.0;
+            let world_y = y as f32 * CELL_SIZE - HALF_BOARD_SIZE + CELL_SIZE / 2.0;
 
             commands.spawn((
                 Sprite {
