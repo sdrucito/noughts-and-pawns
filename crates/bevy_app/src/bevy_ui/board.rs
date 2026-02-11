@@ -22,7 +22,7 @@ fn setup_board(mut commands: Commands, asset_server: Res<AssetServer>) {
         GlobalTransform::default(),
     ));
 
-    let bg_handle = asset_server.load("Background.png");
+    let bg_handle = asset_server.as_ref().load("Background.png");
     //info!("Asset state: {:?}", asset_server.get_load_state(&bg_handle));
 
     commands.spawn((
