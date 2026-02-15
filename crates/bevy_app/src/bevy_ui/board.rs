@@ -14,8 +14,9 @@ fn setup_board(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Camera2d,
         Projection::Orthographic(OrthographicProjection {
-            scaling_mode: ScalingMode::FixedVertical {
-                viewport_height: APP_SIZE as f32,
+            scaling_mode: ScalingMode::Fixed {
+                width: APP_SIZE as f32,
+                height: APP_SIZE as f32,
             },
             ..OrthographicProjection::default_2d()
         }),
