@@ -18,23 +18,29 @@ impl Plugin for HighlightPlugin {
             ));
     }
 }
-fn setup_highlight(mut commands: Commands) {
+fn setup_highlight(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let highlight_texture = asset_server.as_ref().load("cell_highlight.png");
+
     commands.spawn((
-        Sprite {
-            color: Color::srgba(1.0, 1.0, 0.0, 0.3),
-            custom_size: Some(Vec2::splat(64.0)),
+        Sprite{
+            image:highlight_texture,
+            color: Color::srgba(1.0, 1.0, 0.0, 0.5),
             ..default()
         },
         Transform::from_xyz(0.0, 0.0, 5.0),
-        GlobalTransform::default(),
-        CellHighlight
+        Visibility::Hidden,
+        CellHighlight,
     ));
 }
 fn update_highlight(
-    mut highlight_q: Query<&mut Transform, With<CellHighlight>>,
+    mut highlight_q: Query<(&mut Transform, &mut Visibility), With<CellHighlight>>,
     windows: Query<&Window>,
     camera_q: Query<(&Camera, &GlobalTransform)>,
 ) {
+    let Ok((mut transform, mut visibility)) = highlight_q.single_mut() else {
+        return;
+    };
+
     if let Some(world) = cursor_to_world(&windows, &camera_q) {
         if let Some((x, y)) = world_to_cell(world) {
             if let Ok(mut transform) = highlight_q.single_mut() {
@@ -46,6 +52,12 @@ fn update_highlight(
             }
         }
     }
+            transform.translation = cell_to_world(x, y);
+            *visibility = Visibility::Visible;
+            return;
+        }
+    }
+    *visibility = Visibility::Hidden;
 }
 
 fn cursor_to_world(windows: &Query<&Window>, camera_q: &Query<(&Camera, &GlobalTransform)>) -> Option<Vec2> {
