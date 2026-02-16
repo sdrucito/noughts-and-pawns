@@ -56,7 +56,7 @@ pub fn spawn_piece_in_reserve(commands: &mut Commands, asset_server: &AssetServe
     spawn_piece(commands, asset_server, owner, kind, position)
 }
 
-fn reserve_position(owner: Player, kind: PieceKind) -> Vec3 {
+pub fn reserve_position(owner: Player, kind: PieceKind) -> Vec3 {
     let x = match owner {
         Player::White => WHITE_RESERVE_X,
         Player::Black => BLACK_RESERVE_X,

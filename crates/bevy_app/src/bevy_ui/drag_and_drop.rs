@@ -1,8 +1,10 @@
 use bevy::prelude::*;
 use game_core::game::game_state::{GameState, Position};
+use game_core::game::piece::PieceKind;
+use game_core::game::player::Player;
 use game_core::game::rules::Move;
-use crate::bevy_ui::constants::PIECE_Z;
-use crate::bevy_ui::pieces::{BoardPosition, PieceVisual};
+use crate::bevy_ui::constants::{BLACK_RESERVE_X, PIECE_Z, WHITE_RESERVE_X};
+use crate::bevy_ui::pieces::{reserve_position, BoardPosition, PieceVisual};
 use crate::bevy_ui::utils::{cell_to_world, cursor_to_world, world_to_cell};
 pub struct DragAndDropPlugin;
 impl Plugin for DragAndDropPlugin {
@@ -13,7 +15,7 @@ impl Plugin for DragAndDropPlugin {
             .add_systems(Update, (
                 select_piece,
                 drag_piece,
-                drop_piece,
+                drop_piece
             ));
     }
 }
@@ -23,6 +25,26 @@ struct DragState {
     selected: Option<Entity>,
     original_position: Option<Vec3>
 }
+impl DragState {
+    pub fn rollback_position(&mut self, pieces: &mut Query<(Entity, &mut Transform, &PieceVisual, Option<&mut BoardPosition>)>) {
+        if let Some(entity) = self.selected {
+            if let Some(original) = self.original_position {
+                if let Ok((_, mut transform, _, _)) =
+                    pieces.get_mut(entity)
+                {
+                    transform.translation = original;
+                }
+            }
+        }
+        self.clear();
+    }
+
+    pub fn clear(&mut self) {
+        self.selected = None;
+        self.original_position = None;
+    }
+}
+
 fn select_piece(
     buttons: Res<ButtonInput<MouseButton>>,
     windows: Query<&Window>,
@@ -31,14 +53,15 @@ fn select_piece(
     mut drag_state: ResMut<DragState>,
     game_state: Res<GameStateRes>,
 ) {
+    // Mouse position checks
     if !buttons.just_pressed(MouseButton::Left) {
         return;
     }
-
     let Some(world) = cursor_to_world(&windows, &camera_q) else {
         return;
     };
 
+    // Selection
     for (entity, transform, visual) in pieces.iter() {
         if world.distance(transform.translation.truncate()) < 32.0 {
             if visual.owner != game_state.state.current_player {
@@ -80,70 +103,94 @@ fn drop_piece(
     mut drag_state: ResMut<DragState>,
     mut game_state: ResMut<GameStateRes>,
 ) {
+    // Mouse position checks
     if !buttons.just_released(MouseButton::Left) {
         return;
     }
-
-    let Some(entity) = drag_state.selected
-    else { return; };
-
-    let Ok((entity, mut transform, visual, board_pos)) = pieces.get_mut(entity)
-    else { return; };
-
-    let Some(world) = cursor_to_world(&windows, &camera_q) else {
-        restore(&mut transform, &drag_state);
-        drag_state.selected = None;
+    let Some(entity) = drag_state.selected else {
         return;
     };
+    let Some(world) = cursor_to_world(&windows, &camera_q) else {
+        drag_state.rollback_position(&mut pieces);
+        return;
+    };
+    let Some((x, y)) = world_to_cell(world) else {
+        drag_state.rollback_position(&mut pieces);
+        return;
+    };
+    let target_pos = Position { x: x as usize, y: y as usize };
 
-    if !try_drop_on_board(entity, &mut transform, visual, board_pos, world,
-                          &mut commands, &mut game_state) {
-        restore(&mut transform, &drag_state);
-    }
 
-    drag_state.selected = None;
-}
-fn restore(transform: &mut Transform, drag_state: &DragState) {
-    if let Some(original) = drag_state.original_position {
-        transform.translation = original;
-    }
-}
-fn try_drop_on_board(entity: Entity, transform: &mut Transform, visual: &PieceVisual,
-    board_pos: Option<Mut<BoardPosition>>, world: Vec2, commands: &mut Commands,
-    game_state: &mut GameStateRes) -> bool {
-    let Some((x, y)) = world_to_cell(world)
-    else { return false; };
+    // Check if another piece already occupies the target cell (possible capture)
+    let captured_entity = pieces
+        .iter()
+        .find(|(other_entity, _, _, other_board_pos)| {
+            if *other_entity == entity {
+                return false;
+            }
+            if let Some(pos) = other_board_pos {
+                pos.x == x && pos.y == y
+            } else {
+                false
+            }
+        })
+        .map(|(e, _, _, _)| e);
 
-    let pos = Position { x: x as usize, y: y as usize };
+    // Get selected entity and release mutable borrow
+    let (visual_kind, _visual_owner, old_board_pos, original_translation) = {
+        let Ok((_, transform, visual, board_pos)) = pieces.get_mut(entity)
+        else {
+            drag_state.clear();
+            return;
+        };
+        (visual.kind, visual.owner, board_pos.map(|p| (p.x, p.y)), transform.translation)
+    };
 
-    let result = if let Some(old) = board_pos {
+    // Apply move
+    let result = if let Some((old_x, old_y)) = old_board_pos {
         game_core::game::rules::apply_move(
             &mut game_state.state,
             Move::MovePiece {
-                from: Position { x: old.x as usize, y: old.y as usize },
-                to: pos
-            })
+                from: Position {x: old_x as usize, y: old_y as usize},
+                to: target_pos
+            }
+        )
     } else {
         game_core::game::rules::apply_move(
             &mut game_state.state,
             Move::PlacePiece {
-                kind: visual.kind,
-                position: pos
-            })
+                kind: visual_kind,
+                position: target_pos
+            }
+        )
     };
 
     match result {
         Ok(_) => {
             info!("Move successful to ({}, {})", x, y);
-            transform.translation = cell_to_world(x, y).extend(PIECE_Z);
+            // Handle captured piece
+            if let Some(captured) = captured_entity {
+                if let Ok((_, mut captured_transform, captured_visual, _)) = pieces.get_mut(captured){
+                    captured_transform.translation = reserve_position(captured_visual.owner, captured_visual.kind);
+                }
+                commands.entity(captured).remove::<BoardPosition>();
+            }
+
+            // Handle moved piece
+            if let Ok((_, mut transform, _, _)) = pieces.get_mut(entity) {
+                transform.translation = cell_to_world(x, y).extend(PIECE_Z);
+            }
+
             commands.entity(entity).insert(BoardPosition { x, y });
-            true
         }
+
         Err(err) => {
             warn!("Invalid move: {}", err);
-            false
+            drag_state.rollback_position(&mut pieces);
         }
     }
+
+    drag_state.clear();
 }
 
 
