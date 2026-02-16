@@ -30,24 +30,45 @@ impl Plugin for PiecesPlugin {
 }
 
 fn spawn_reserve_pieces(mut commands: Commands, asset_server: Res<AssetServer>) {
-    spawn_side(&mut commands, asset_server.as_ref(), Player::White, WHITE_RESERVE_X);
-    spawn_side(&mut commands, asset_server.as_ref(), Player::Black, BLACK_RESERVE_X);
+    for piece in RESERVE_LAYOUT {
+        spawn_piece_in_reserve(&mut commands, asset_server.as_ref(), Player::White, piece.kind);
+    }
+    for piece in RESERVE_LAYOUT {
+        spawn_piece_in_reserve(&mut commands, asset_server.as_ref(), Player::Black, piece.kind);
+    }
 }
 
-fn spawn_side(commands: &mut Commands, asset_server: &AssetServer, player: Player, x: f32) {
-    for slot in RESERVE_LAYOUT {
-        let texture = asset_server.load(sprite_path(player, slot.kind));
-
-        commands.spawn((
+fn spawn_piece(commands: &mut Commands, asset_server: &AssetServer, owner: Player,
+                   kind: PieceKind, position: Vec3) -> Entity {
+    let texture = asset_server.load(sprite_path(owner, kind));
+    commands
+        .spawn((
             Sprite::from_image(texture),
-            Transform::from_xyz(x, slot.y, PIECE_Z),
+            Transform::from_translation(position),
             GlobalTransform::default(),
-            PieceVisual {
-                owner: player,
-                kind: slot.kind,
-            },
-        ));
-    }
+            PieceVisual { owner, kind },
+        ))
+        .id()
+}
+pub fn spawn_piece_in_reserve(commands: &mut Commands, asset_server: &AssetServer, owner: Player,
+    kind: PieceKind) -> Entity {
+    let position = reserve_position(owner, kind);
+    spawn_piece(commands, asset_server, owner, kind, position)
+}
+
+fn reserve_position(owner: Player, kind: PieceKind) -> Vec3 {
+    let x = match owner {
+        Player::White => WHITE_RESERVE_X,
+        Player::Black => BLACK_RESERVE_X,
+    };
+
+    let y= RESERVE_LAYOUT
+        .iter()
+        .find(|slot| slot.kind == kind)
+        .map(|slot| slot.y)
+        .expect("Kind not in reserve layout");
+
+    Vec3::new(x, y, PIECE_Z)
 }
 
 fn sprite_path(player: Player, kind: PieceKind) -> String {
