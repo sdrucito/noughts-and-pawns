@@ -12,13 +12,16 @@ struct ReserveSlot {
     kind: PieceKind,
     y: f32,
 }
-
+#[derive(Component)]
+pub struct BoardPosition {
+    pub x: i32,
+    pub y: i32,
+}
 #[derive(Component)]
 pub struct PieceVisual {
     pub owner: Player,
     pub kind: PieceKind,
 }
-
 pub struct PiecesPlugin;
 impl Plugin for PiecesPlugin {
     fn build(&self, app: &mut App) {

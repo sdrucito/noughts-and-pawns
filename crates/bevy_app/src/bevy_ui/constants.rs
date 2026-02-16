@@ -11,7 +11,9 @@ pub(crate) const WHITE_RESERVE_X: f32 = -192.0;
 pub(crate) const BLACK_RESERVE_X: f32 = 192.0;
 pub(crate) const BACKGROUND_Z: f32 = -10.0;
 pub(crate) const PIECE_Z:f32 = 10.0;
+pub(crate) const HIGHLIGHT_Z:f32 = 5.0;
 
 
 pub(crate) const BLACK_QUAD: Color = Color::srgb(0.9, 0.9, 0.9);
 pub(crate) const WHITE_QUAD: Color = Color::srgb(0.7, 0.7, 0.7);
+pub(crate) const HIGHLIGHT_CELL: Color = Color::srgba(1.0, 1.0, 0.0, 0.5);

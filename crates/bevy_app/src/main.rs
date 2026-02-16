@@ -2,9 +2,12 @@ mod bevy_ui;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
+use game_core::game::game_state::GameState;
 use crate::bevy_ui::board::BoardPlugin;
-use crate::bevy_ui::board_input::HighlightPlugin;
+use crate::bevy_ui::drag_and_drop::{GameStateRes};
 use crate::bevy_ui::constants::APP_SIZE;
+use crate::bevy_ui::drag_and_drop::DragAndDropPlugin;
+use crate::bevy_ui::hovering::HighlightPlugin;
 use crate::bevy_ui::pieces::PiecesPlugin;
 
 fn main() {
@@ -26,6 +29,9 @@ fn main() {
             })
 
         )
-        .add_plugins((BoardPlugin, PiecesPlugin, HighlightPlugin))
+        .add_plugins((BoardPlugin, PiecesPlugin, HighlightPlugin, DragAndDropPlugin))
+        .insert_resource(GameStateRes {
+            state: GameState::new(),
+        })
         .run();
 }
