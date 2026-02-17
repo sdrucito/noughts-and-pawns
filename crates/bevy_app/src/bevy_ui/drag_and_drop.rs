@@ -1,9 +1,7 @@
 use bevy::prelude::*;
 use game_core::game::game_state::{GameState, Position};
-use game_core::game::piece::PieceKind;
-use game_core::game::player::Player;
 use game_core::game::rules::Move;
-use crate::bevy_ui::constants::{BLACK_RESERVE_X, PIECE_Z, WHITE_RESERVE_X};
+use crate::bevy_ui::constants::PIECE_Z;
 use crate::bevy_ui::pieces::{reserve_position, BoardPosition, PieceVisual};
 use crate::bevy_ui::utils::{cell_to_world, cursor_to_world, world_to_cell};
 pub struct DragAndDropPlugin;
@@ -137,7 +135,7 @@ fn drop_piece(
         .map(|(e, _, _, _)| e);
 
     // Get selected entity and release mutable borrow
-    let (visual_kind, _visual_owner, old_board_pos, original_translation) = {
+    let (visual_kind, _visual_owner, old_board_pos, _original_translation) = {
         let Ok((_, transform, visual, board_pos)) = pieces.get_mut(entity)
         else {
             drag_state.clear();

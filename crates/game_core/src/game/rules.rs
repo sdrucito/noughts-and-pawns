@@ -78,9 +78,8 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
         }
     }
 }
-fn validate_move_piece(state: &mut GameState, from: Position, to: Position) -> Result<(), String> {
-    let piece = state.board.get(from)
-        .ok_or("No piece at source position")?;
+fn validate_move_piece(state: &GameState, from: Position, to: Position) -> Result<(), String> {
+    let piece = state.board.get(from).ok_or("No piece at source position")?;
 
     if piece.owner != state.current_player {
         return Err("You can only move your own pieces".to_string());
@@ -97,7 +96,7 @@ fn validate_move_piece(state: &mut GameState, from: Position, to: Position) -> R
         PieceKind::Pawn => validate_pawn_move(state, from, to)
     }
 }
-fn validate_rook_move(state: &mut GameState, from: Position, to: Position) -> Result<(), String> {
+fn validate_rook_move(state: &GameState, from: Position, to: Position) -> Result<(), String> {
     let same_row = from.y == to.y;
     let same_col = from.x == to.x;
 
@@ -241,4 +240,31 @@ pub fn check_win_condition(state: &GameState, player: Player) -> bool {
 fn cell_belongs_to_player(state: &GameState, x: usize, y: usize, player: Player) -> bool {
     state.board.get(Position { x, y })
         .map(|p| p.owner == player).unwrap_or(false)
+}
+
+pub fn valid_moves_for(state: &GameState, position: Position) -> Vec<Position> {
+    let Some(piece) = state.board.get(position) else {
+        return vec![];
+    };
+    if piece.owner != state.current_player {
+        return vec![];
+    }
+
+    let mut moves = Vec::new();
+
+    for y in 0..BOARD_SIZE {
+        for x in 0..BOARD_SIZE {
+            let to = Position { x, y };
+
+            if position == to {
+                continue;
+            }
+
+            if validate_move_piece(state, position, to).is_ok() {
+                moves.push(to);
+            }
+        }
+    }
+
+    moves
 }

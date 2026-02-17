@@ -6,6 +6,8 @@ mod rules;
 
 /// Tests related to generic move validation rules
 mod rules_tests {
+    use game_core::game::player::Player;
+    use game_core::game::rules::valid_moves_for;
     use super::*;
 
     /// A piece cannot be placed on an already occupied cell
@@ -119,6 +121,48 @@ mod rules_tests {
 
         // Then
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn valid_moves_return_error(){
+        // Given
+        let mut state = GameState::new();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Rook,
+            position: Position { x: 1, y: 1 },
+        }).unwrap();
+
+        // When
+        let moves1 = valid_moves_for(&state,Position { x: 1, y: 1 });
+        let moves2 = valid_moves_for(&state,Position { x: 0, y: 0 });
+
+        // Then
+        assert!(moves1.is_empty());
+        assert!(moves2.is_empty());
+
+    }
+
+    /// Test the generation of moves
+    #[test]
+    fn rook_has_correct_valid_moves() {
+        // Given
+        let mut state = GameState::new();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Rook,
+            position: Position { x: 1, y: 1 },
+        }).unwrap();
+        state.current_player = Player::White;
+
+        // When
+        let moves = valid_moves_for(&state,Position { x: 1, y: 1 });
+
+        // Then
+        assert!(moves.contains(&Position { x: 1, y: 0 }));
+        assert!(moves.contains(&Position { x: 1, y: 2 }));
+        assert!(moves.contains(&Position { x: 0, y: 1 }));
+        assert!(moves.contains(&Position { x: 2, y: 1 }));
     }
 
 }
