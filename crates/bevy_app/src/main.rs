@@ -7,7 +7,7 @@ use crate::bevy_ui::board::BoardPlugin;
 use crate::bevy_ui::drag_and_drop::{GameStateRes};
 use crate::bevy_ui::constants::APP_SIZE;
 use crate::bevy_ui::drag_and_drop::DragAndDropPlugin;
-use crate::bevy_ui::hovering::HighlightPlugin;
+use crate::bevy_ui::hovering::{HighlightPlugin, ValidMovesPlugin};
 use crate::bevy_ui::pieces::PiecesPlugin;
 
 fn main() {
@@ -29,7 +29,7 @@ fn main() {
             })
 
         )
-        .add_plugins((BoardPlugin, PiecesPlugin, HighlightPlugin, DragAndDropPlugin))
+        .add_plugins((BoardPlugin, PiecesPlugin, HighlightPlugin, DragAndDropPlugin, ValidMovesPlugin))
         .insert_resource(GameStateRes {
             state: GameState::new(),
         })
