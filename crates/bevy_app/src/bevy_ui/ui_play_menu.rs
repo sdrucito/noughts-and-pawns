@@ -131,7 +131,7 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                                     align_items: AlignItems::Center,
                                     ..default()
                                 },
-                                BackgroundColor(Color::BLACK),
+                                BackgroundColor(Color::srgb(0.1,0.1,0.1)),
                                 PlayAsBlackCheckbox { enabled: false },
                                 CheckboxSquare,
                             ));
@@ -304,7 +304,7 @@ fn update_checkbox_visuals(
         *bg = if checkbox.enabled {
             BackgroundColor(Color::WHITE)
         } else {
-            BackgroundColor(Color::BLACK)
+            BackgroundColor(Color::srgb(0.1,0.1,0.1))
         };
     }
 }
