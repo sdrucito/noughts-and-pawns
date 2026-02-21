@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use crate::AppState;
+use crate::bevy_ui::constants::{HOVERED_BUTTON_COLOR, NORMAL_BUTTON_COLOR, PRESSED_BUTTON_COLOR};
 use crate::bevy_ui::ui_toasts::{spawn_toast, update_toasts};
 
 pub struct MainMenuPlugin;
@@ -9,25 +10,17 @@ impl Plugin for MainMenuPlugin {
             .add_systems(OnEnter(AppState::MainMenu), setup_menu)
             .add_systems(Update,(menu_buttons, update_toasts)
                 .run_if(in_state(AppState::MainMenu)))
-            .add_systems(OnExit(AppState::MainMenu), cleanup_menu);
+            .add_systems(OnExit(AppState::MainMenu), cleanup_main_menu);
     }
 }
 #[derive(Component)]
 struct MainMenu;
 #[derive(Component)]
-enum MenuButton {
-    VsPlayer,
-    VsAI,
+enum MainMenuButton {
+    Play,
+    Options,
+    Quit,
 }
-#[derive(Component)]
-struct MainMenuUI;
-#[derive(Component)]
-struct AiButtonToast {
-    timer: Timer,
-}
-const NORMAL_BUTTON_COLOR: Color  = Color::srgb(0.3, 0.3, 0.3);
-const HOVERED_BUTTON_COLOR: Color = Color::srgb(0.5, 0.5, 0.5);
-const PRESSED_BUTTON_COLOR: Color = Color::srgb(0.2, 0.6, 0.9);
 fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     let heading_font = asset_server.load("fonts/Jacquard12-Regular.ttf");
@@ -57,12 +50,13 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextColor(Color::WHITE),
             ));
 
-            spawn_button(parent, simple_font.clone(), "Play vs Player", MenuButton::VsPlayer);
-            spawn_button(parent, simple_font.clone(), "Play vs AI", MenuButton::VsAI);
+            spawn_button(parent, simple_font.clone(), "Play", MainMenuButton::Play);
+            spawn_button(parent, simple_font.clone(), "Options", MainMenuButton::Options);
+            spawn_button(parent, simple_font.clone(), "Quit", MainMenuButton::Quit);
         });
 }
 
-fn spawn_button(parent: &mut ChildSpawnerCommands, font: Handle<Font>, label: &str, button_type: MenuButton) {
+fn spawn_button(parent: &mut ChildSpawnerCommands, font: Handle<Font>, label: &str, button_type: MainMenuButton) {
     parent.spawn((
         Button,
         Node {
@@ -91,7 +85,7 @@ fn spawn_button(parent: &mut ChildSpawnerCommands, font: Handle<Font>, label: &s
 
 fn menu_buttons(
     mut interaction_query: Query<
-        (&Interaction, &MenuButton, &mut BackgroundColor),
+        (&Interaction, &MainMenuButton, &mut BackgroundColor),
         (Changed<Interaction>, With<Button>),
     >,
     mut next_state: ResMut<NextState<AppState>>,
@@ -113,24 +107,20 @@ fn menu_buttons(
 
         if *interaction == Interaction::Pressed {
             match button_type {
-                MenuButton::VsPlayer => {
-                    info!("Starting Player vs Player");
-                    next_state.set(AppState::InGame);
+                MainMenuButton::Play => {
+                    next_state.set(AppState::PlayMenu);
                 }
-                MenuButton::VsAI => {
-                    info!("AI not implemented yet");
-
-                    spawn_toast(&mut commands, &asset_server, "AI not implemented yet", 1.5, 0.8);
+                MainMenuButton::Options => {
+                    spawn_toast(&mut commands, &asset_server, "Options not implemented yet", 1.5, 0.8); //TODO
+                }
+                MainMenuButton::Quit => {
+                    std::process::exit(0);
                 }
             }
         }
     }
 }
-
-
-
-
-fn cleanup_menu(
+fn cleanup_main_menu(
     mut commands: Commands,
     query: Query<Entity, With<MainMenu>>,
 ) {

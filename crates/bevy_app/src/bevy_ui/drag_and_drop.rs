@@ -1,9 +1,11 @@
 use bevy::prelude::*;
-use game_core::game::game_state::{GameState, Position};
+use game_core::game::game_state::Position;
 use game_core::game::rules::Move;
 use crate::bevy_ui::constants::PIECE_Z;
 use crate::bevy_ui::pieces::{reserve_position, BoardPosition, PieceVisual};
 use crate::bevy_ui::utils::{cell_to_world, cursor_to_world, world_to_cell};
+use crate::{AppState, GameStateRes};
+
 pub struct DragAndDropPlugin;
 impl Plugin for DragAndDropPlugin {
     fn build(&self, app: &mut App) {
@@ -14,7 +16,7 @@ impl Plugin for DragAndDropPlugin {
                 select_piece,
                 drag_piece,
                 drop_piece
-            ));
+            ).run_if(in_state(AppState::InGame)));
     }
 }
 
@@ -189,17 +191,4 @@ fn drop_piece(
     }
 
     drag_state.clear();
-}
-
-
-#[derive(Resource)]
-pub struct GameStateRes {
-    pub state: GameState,
-}
-impl Default for GameStateRes {
-    fn default() -> Self {
-        Self {
-            state: GameState::new(),
-        }
-    }
 }

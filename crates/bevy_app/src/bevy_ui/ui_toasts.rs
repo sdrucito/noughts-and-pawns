@@ -21,6 +21,7 @@ pub fn spawn_toast(commands: &mut Commands, asset_server: &AssetServer,
                 position_type: PositionType::Absolute,
                 bottom: Val::Px(40.0),
                 left: Val::Percent(50.0),
+                border_radius: BorderRadius::all(px(10)),
                 margin: UiRect {
                     left: Val::Px(-150.0),
                     ..default()

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use game_core::game::game_state::Position;
 use crate::bevy_ui::constants::{CAPTURE_OVERLAY_SIZE, HIGHLIGHT_CELL, HIGHLIGHT_Z, MOVE_INDICATOR_CAPTURED, MOVE_INDICATOR_FREE, MOVE_INDICATOR_SIZE, MOVE_INDICATOR_Z, PIECE_Z};
-use crate::bevy_ui::drag_and_drop::GameStateRes;
+use crate::{AppState, GameStateRes};
 use crate::bevy_ui::pieces::{BoardPosition, PieceVisual};
 use crate::bevy_ui::utils::{cell_to_world, cursor_to_world, world_to_cell};
 
@@ -9,7 +9,7 @@ pub struct HighlightPlugin;
 impl Plugin for HighlightPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_highlight);
-        app.add_systems(Update, update_highlight);
+        app.add_systems(Update, update_highlight.run_if(in_state(AppState::InGame)));
     }
 }
 

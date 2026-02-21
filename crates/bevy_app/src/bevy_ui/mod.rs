@@ -3,6 +3,8 @@ pub mod pieces;
 pub mod drag_and_drop;
 pub mod constants;
 pub mod hovering;
-pub mod utils;
-pub mod ui_menu;
+mod utils;
+pub mod ui_main_menu;
+pub mod ui_play_menu;
+
 mod ui_toasts;
