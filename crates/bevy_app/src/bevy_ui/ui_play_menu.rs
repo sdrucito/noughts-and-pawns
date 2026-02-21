@@ -9,7 +9,7 @@ impl Plugin for PlayMenuPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(OnEnter(AppState::PlayMenu), setup_play_menu)
-            .add_systems(Update,(play_menu_interactions, update_toasts)
+            .add_systems(Update,(play_menu_interactions, update_toasts, update_checkbox_visuals)
                 .run_if(in_state(AppState::PlayMenu)))
             .add_systems(OnExit(AppState::PlayMenu), cleanup_play_menu);
     }
@@ -76,20 +76,44 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
             spawn_play_button(parent, simple_font.clone(), "Vs Player", PlayMenuButton::VsPlayer);
 
             parent
-                .spawn(Node {
-                    width: Val::Auto,
-                    height: Val::Auto,
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    column_gap: Val::Px(16.0),
-                    ..default()
-                })
-                .with_children(|row| {
-                    spawn_play_button(row, simple_font.clone(),"Vs AI", PlayMenuButton::VsAI);
+                .spawn((
+                    Node {
+                        width: Val::Px(256.0),
+                        height: Val::Px(64.0),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        position_type: PositionType::Relative,
+                        ..default()
+                    },
+                ))
+                .with_children(|parent| {
+                    parent.spawn((
+                        Button,
+                        Node {
+                            width: Val::Px(256.0),
+                            height: Val::Px(64.0),
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        },
+                        BackgroundColor(NORMAL_BUTTON_COLOR),
+                        PlayMenuButton::VsAI,
+                    ))
+                        .with_children(|parent| {
+                            parent.spawn((
+                                Text::new("Vs AI"),
+                                TextFont {
+                                    font: simple_font.clone(),
+                                    font_size: 30.0,
+                                    ..default()
+                                },
+                                TextColor(Color::WHITE),
+                            ));
+                        });
 
-                    row.spawn(Node {
-                        width: Val::Auto,
-                        height: Val::Auto,
+                    parent.spawn(Node {
+                        position_type: PositionType::Absolute,
+                        right: Val::Px(-100.0),
                         justify_content: JustifyContent::Center,
                         flex_direction: FlexDirection::Column,
                         align_items: AlignItems::Center,
@@ -127,7 +151,7 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 .spawn((
                     Button,
                     Node {
-                        width: Val::Px(350.0),
+                        width: Val::Px(192.0),
                         height: Val::Px(50.0),
                         justify_content: JustifyContent::SpaceBetween,
                         align_items: AlignItems::Center,
@@ -274,19 +298,14 @@ fn play_menu_interactions(
     }
 }
 fn update_checkbox_visuals(
-    checkbox_query: Query<(&PlayAsBlackCheckbox, &Children)>,
-    mut square_query: Query<&mut BackgroundColor, With<CheckboxSquare>>,
-) {
-    for (checkbox, children) in &checkbox_query {
-        if let Some(&square_entity) = children.get(0) {
-            if let Ok(mut square_bg) = square_query.get_mut(square_entity) {
-                *square_bg = if checkbox.enabled {
-                    BackgroundColor(Color::WHITE)
-                } else {
-                    BackgroundColor(Color::BLACK)
-                };
-            }
-        }
+    mut query: Query<(&PlayAsBlackCheckbox, &mut BackgroundColor),
+        (With<CheckboxSquare>)>) {
+    for (checkbox, mut bg) in &mut query {
+        *bg = if checkbox.enabled {
+            BackgroundColor(Color::WHITE)
+        } else {
+            BackgroundColor(Color::BLACK)
+        };
     }
 }
 fn cleanup_play_menu(
