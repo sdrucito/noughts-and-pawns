@@ -36,7 +36,8 @@ pub struct GameState {
     pub board: Board,
     pub current_player: Player,
     pub white: PlayerState,
-    pub black: PlayerState
+    pub black: PlayerState,
+    pub winner: Option<Player>,
 }
 impl GameState {
     pub fn new() -> Self {
@@ -44,7 +45,8 @@ impl GameState {
             board: Board::new(),
             current_player: Player::White,
             white: PlayerState::new(Player::White),
-            black: PlayerState::new(Player::Black)
+            black: PlayerState::new(Player::Black),
+            winner: None
         }
     }
     pub fn player_state(&self, player: Player) -> &PlayerState {

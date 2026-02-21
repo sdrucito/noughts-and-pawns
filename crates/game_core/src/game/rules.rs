@@ -69,8 +69,8 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
             state.board.set(from, None);
             state.board.set(to, Some(piece));
 
-            if check_win_condition(state, state.current_player) {
-                return Err(format!("{:?} wins the game!", state.current_player));
+            if let Some(winner) = check_win_condition(state, state.current_player) {
+                state.winner = Some(winner);
             }
 
             state.switch_turn();
@@ -213,28 +213,28 @@ fn pawn_forward_delta(piece: &Piece) -> isize {
     }
 }
 
-pub fn check_win_condition(state: &GameState, player: Player) -> bool {
+pub fn check_win_condition(state: &GameState, player: Player) -> Option<Player> {
     // Rows
     for y in 0..BOARD_SIZE {
         if (0..BOARD_SIZE).all(|x| cell_belongs_to_player(state, x, y, player)) {
-            return true;
+            return Some(player);
         }
     }
     // Columns
     for x in 0..BOARD_SIZE {
         if (0..BOARD_SIZE).all(|y| cell_belongs_to_player(state, x, y, player)) {
-            return true;
+            return Some(player);
         }
     }
     // Diagonals
     if (0..BOARD_SIZE).all(|i| cell_belongs_to_player(state, i, i, player)) {
-        return true;
+        return Some(player);
     }
     if (0..BOARD_SIZE).all(|i| cell_belongs_to_player(state, BOARD_SIZE - 1 - i, i, player)) {
-        return true;
+        return Some(player);
     }
 
-    false
+    None
 }
 
 fn cell_belongs_to_player(state: &GameState, x: usize, y: usize, player: Player) -> bool {

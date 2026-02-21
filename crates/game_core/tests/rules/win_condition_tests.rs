@@ -26,7 +26,7 @@ mod win_condition_tests {
         }
 
         // Then
-        assert!(check_win_condition(&state, Player::White));
+        assert_eq!(check_win_condition(&state, Player::White), Some(Player::White));
     }
 
     /// A player wins with four pieces aligned vertically
@@ -48,7 +48,7 @@ mod win_condition_tests {
         }
 
         // Then
-        assert!(check_win_condition(&state, Player::White));
+        assert_eq!(check_win_condition(&state, Player::White), Some(Player::White));
     }
 
     /// A player wins with four pieces on the main diagonal
@@ -70,7 +70,7 @@ mod win_condition_tests {
         }
 
         // Then
-        assert!(check_win_condition(&state, Player::White));
+        assert_eq!(check_win_condition(&state, Player::White), Some(Player::White));
     }
 
     /// A player wins with four pieces on the secondary diagonal
@@ -92,7 +92,7 @@ mod win_condition_tests {
         }
 
         // Test
-        assert!(check_win_condition(&state, Player::White));
+        assert_eq!(check_win_condition(&state, Player::White), Some(Player::White));
     }
 
     /// A line with mixed player pieces does not trigger a win
@@ -105,7 +105,7 @@ mod win_condition_tests {
         state.board.set(Position { x: 2, y: 0 }, Some(Piece { owner: Player::White, kind: PieceKind::Rook, pawn_dir: None }));
         state.board.set(Position { x: 3, y: 0 }, Some(Piece { owner: Player::White, kind: PieceKind::Bishop, pawn_dir: None }));
 
-        assert!(!check_win_condition(&state, Player::White));
+        assert_eq!(check_win_condition(&state, Player::White), None);
     }
 
 }
