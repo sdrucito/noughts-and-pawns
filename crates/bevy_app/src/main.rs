@@ -8,7 +8,16 @@ use crate::bevy_ui::drag_and_drop::{GameStateRes};
 use crate::bevy_ui::constants::APP_SIZE;
 use crate::bevy_ui::drag_and_drop::DragAndDropPlugin;
 use crate::bevy_ui::hovering::{HighlightPlugin, ValidMovesPlugin};
+use crate::bevy_ui::ui_menu::MainMenuPlugin;
 use crate::bevy_ui::pieces::PiecesPlugin;
+
+#[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
+enum AppState {
+    #[default]
+    MainMenu,
+    InGame,
+    GameOver,
+}
 
 fn main() {
     App::new()
@@ -27,11 +36,35 @@ fn main() {
                 file_path: "../../assets".to_string(),
                 ..default()
             })
-
         )
-        .add_plugins((BoardPlugin, PiecesPlugin, HighlightPlugin, DragAndDropPlugin, ValidMovesPlugin))
-        .insert_resource(GameStateRes {
-            state: GameState::new(),
-        })
+        .init_state::<AppState>()
+        .add_plugins((MainMenuPlugin, GamePlugin))
         .run();
+}
+pub struct GamePlugin;
+
+impl Plugin for GamePlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .add_plugins((
+                BoardPlugin,
+                PiecesPlugin,
+                HighlightPlugin,
+                DragAndDropPlugin,
+                ValidMovesPlugin,
+            ))
+            .insert_resource(GameStateRes {
+                state: GameState::new(),
+            })
+            .add_systems(OnEnter(AppState::InGame), setup_game)
+            .add_systems(OnExit(AppState::InGame), cleanup_game);
+    }
+}
+
+fn setup_game() {
+    info!("Entering InGame state");
+}
+
+fn cleanup_game() {
+    info!("Leaving InGame state");
 }
