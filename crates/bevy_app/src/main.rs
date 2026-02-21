@@ -3,7 +3,6 @@ mod bevy_ui;
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use game_core::game::game_state::GameState;
-use crate::AppState::PlayMenu;
 use crate::bevy_ui::board::BoardPlugin;
 use crate::bevy_ui::constants::APP_SIZE;
 use crate::bevy_ui::drag_and_drop::DragAndDropPlugin;

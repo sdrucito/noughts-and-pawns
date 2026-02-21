@@ -240,7 +240,7 @@ fn play_menu_interactions(
     mut text_query: Query<&mut Text>, mut next_state: ResMut<NextState<AppState>>,
     mut commands: Commands, asset_server: Res<AssetServer>) {
 
-    for (entity, interaction, mut bg_color, play_button, checkbox, timer_selector, children) in
+    for (_, interaction, mut bg_color, play_button, checkbox, timer_selector, children) in
         &mut button_query
     {
         match *interaction {
@@ -299,7 +299,7 @@ fn play_menu_interactions(
 }
 fn update_checkbox_visuals(
     mut query: Query<(&PlayAsBlackCheckbox, &mut BackgroundColor),
-        (With<CheckboxSquare>)>) {
+        With<CheckboxSquare>>) {
     for (checkbox, mut bg) in &mut query {
         *bg = if checkbox.enabled {
             BackgroundColor(Color::WHITE)
