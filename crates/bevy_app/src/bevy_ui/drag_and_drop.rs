@@ -4,14 +4,15 @@ use game_core::game::rules::Move;
 use crate::bevy_ui::constants::PIECE_Z;
 use crate::bevy_ui::pieces::{reserve_position, BoardPosition, PieceVisual};
 use crate::bevy_ui::utils::{cell_to_world, cursor_to_world, world_to_cell};
-use crate::{AppState, GameStateRes};
-
+use crate::bevy_ui::game_flow::{GameOverEvent, GameStateRes};
+use crate::AppState;
 pub struct DragAndDropPlugin;
 impl Plugin for DragAndDropPlugin {
     fn build(&self, app: &mut App) {
         app
             .init_resource::<DragState>()
             .init_resource::<GameStateRes>()
+            .add_message::<GameOverEvent>()
             .add_systems(Update, (
                 select_piece,
                 drag_piece,
@@ -102,6 +103,7 @@ fn drop_piece(
     mut pieces: Query<(Entity, &mut Transform, &PieceVisual, Option<&mut BoardPosition>)>,
     mut drag_state: ResMut<DragState>,
     mut game_state: ResMut<GameStateRes>,
+    mut game_over_writer: MessageWriter<GameOverEvent>
 ) {
     // Mouse position checks
     if !buttons.just_released(MouseButton::Left) {
@@ -182,6 +184,11 @@ fn drop_piece(
             }
 
             commands.entity(entity).insert(BoardPosition { x, y });
+
+            if let Some(winner) = game_state.state.winner {
+                info!("Game over! Winner: {:?}", winner);
+                game_over_writer.write(GameOverEvent { winner });
+            }
         }
 
         Err(err) => {

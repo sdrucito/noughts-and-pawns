@@ -39,6 +39,11 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
             state.board.set(position, Some(piece));
 
             state.player_state_mut(state.current_player).remove_piece(kind);
+
+            if let Some(winner) = check_win_condition(state, state.current_player) {
+                state.winner = Some(winner);
+            }
+
             state.switch_turn();
             Ok(())
         }

@@ -2,13 +2,10 @@ mod bevy_ui;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-use game_core::game::game_state::GameState;
-use crate::bevy_ui::board::BoardPlugin;
 use crate::bevy_ui::constants::APP_SIZE;
-use crate::bevy_ui::drag_and_drop::DragAndDropPlugin;
-use crate::bevy_ui::hovering::{HighlightPlugin, ValidMovesPlugin};
+use crate::bevy_ui::game_flow::GamePlugin;
+use crate::bevy_ui::ui_game_over::GameOverPlugin;
 use crate::bevy_ui::ui_main_menu::MainMenuPlugin;
-use crate::bevy_ui::pieces::PiecesPlugin;
 use crate::bevy_ui::ui_play_menu::PlayMenuPlugin;
 
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
@@ -40,45 +37,6 @@ fn main() {
             })
         )
         .init_state::<AppState>()
-        .add_plugins((MainMenuPlugin, PlayMenuPlugin, GamePlugin))
+        .add_plugins((MainMenuPlugin, PlayMenuPlugin, GamePlugin, GameOverPlugin))
         .run();
-}
-pub struct GamePlugin;
-
-impl Plugin for GamePlugin {
-    fn build(&self, app: &mut App) {
-        app
-            .add_plugins((
-                BoardPlugin,
-                PiecesPlugin,
-                HighlightPlugin,
-                DragAndDropPlugin,
-                ValidMovesPlugin,
-            ))
-            .insert_resource(GameStateRes {
-                state: GameState::new(),
-            })
-            .add_systems(OnEnter(AppState::InGame), setup_game)
-            .add_systems(OnExit(AppState::InGame), cleanup_game);
-    }
-}
-
-fn setup_game() {
-    info!("Entering InGame state");
-}
-
-fn cleanup_game() {
-    info!("Leaving InGame state");
-}
-
-#[derive(Resource)]
-pub struct GameStateRes {
-    pub state: GameState,
-}
-impl Default for GameStateRes {
-    fn default() -> Self {
-        Self {
-            state: GameState::new(),
-        }
-    }
 }
