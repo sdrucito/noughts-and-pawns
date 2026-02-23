@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use game_core::game::piece::PieceKind;
 use game_core::game::player::Player;
+use crate::AppState;
 use crate::bevy_ui::constants::{BLACK_RESERVE_X, WHITE_RESERVE_X, PIECE_Z};
 const RESERVE_LAYOUT: [ReserveSlot; 4] = [
     ReserveSlot { kind: PieceKind::Pawn,   y: 108.0 },
@@ -25,7 +26,9 @@ pub struct PieceVisual {
 pub struct PiecesPlugin;
 impl Plugin for PiecesPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_reserve_pieces);
+        app
+            .add_systems(OnEnter(AppState::InGame), spawn_reserve_pieces)
+            .add_systems(OnExit(AppState::InGame), despawn_pieces);
     }
 }
 
@@ -56,6 +59,14 @@ pub fn spawn_piece_in_reserve(commands: &mut Commands, asset_server: &AssetServe
     spawn_piece(commands, asset_server, owner, kind, position)
 }
 
+fn despawn_pieces(
+    mut commands: Commands,
+    query: Query<Entity, With<PieceVisual>>,
+) {
+    for entity in &query {
+        commands.entity(entity).despawn();
+    }
+}
 pub fn reserve_position(owner: Player, kind: PieceKind) -> Vec3 {
     let x = match owner {
         Player::White => WHITE_RESERVE_X,
