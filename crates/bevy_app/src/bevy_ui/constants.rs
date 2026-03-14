@@ -26,3 +26,5 @@ pub(crate) const MOVE_INDICATOR_CAPTURED: Color = Color::srgba(0.0, 1.0, 0.0, 0.
 pub(crate) const NORMAL_BUTTON_COLOR: Color  = Color::srgb(0.3, 0.3, 0.3);
 pub(crate) const HOVERED_BUTTON_COLOR: Color = Color::srgb(0.5, 0.5, 0.5);
 pub(crate) const PRESSED_BUTTON_COLOR: Color = Color::srgb(0.2, 0.6, 0.9);
+pub(crate) const TEXT_COLOR: Color  = Color::srgb_u8(230, 236, 255);
+
