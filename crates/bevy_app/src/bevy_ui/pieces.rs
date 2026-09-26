@@ -47,7 +47,7 @@ fn spawn_piece(commands: &mut Commands, asset_server: &AssetServer, owner: Playe
     commands
         .spawn((
             Sprite::from_image(texture),
-            Transform::from_translation(position),
+            Transform::from_translation(position).with_scale(Vec3::splat(0.12)),
             GlobalTransform::default(),
             PieceVisual { owner, kind },
         ))
@@ -59,10 +59,7 @@ pub fn spawn_piece_in_reserve(commands: &mut Commands, asset_server: &AssetServe
     spawn_piece(commands, asset_server, owner, kind, position)
 }
 
-fn despawn_pieces(
-    mut commands: Commands,
-    query: Query<Entity, With<PieceVisual>>,
-) {
+fn despawn_pieces(mut commands: Commands, query: Query<Entity, With<PieceVisual>>) {
     for entity in &query {
         commands.entity(entity).despawn();
     }

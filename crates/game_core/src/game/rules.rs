@@ -30,12 +30,14 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
                 None
             };
 
-            let piece = Piece {
+            let mut piece = Piece {
                 owner: state.current_player,
                 kind,
                 pawn_dir,
             };
 
+            update_pawn_direction_at_edge(&mut piece, position);
+            
             state.board.set(position, Some(piece));
 
             state.player_state_mut(state.current_player).remove_piece(kind);
@@ -56,20 +58,7 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
                 state.player_state_mut(captured.owner).add_piece(captured.kind);
             }
 
-            if piece.kind == PieceKind::Pawn {
-                let forward = pawn_forward_delta(&piece);
-                let next_y = to.y as isize + forward;
-
-                let reached_edge =
-                    next_y < 0 || next_y >= BOARD_SIZE as isize;
-
-                if reached_edge {
-                    piece.pawn_dir = Some(match piece.pawn_dir.unwrap() {
-                        PawnDirection::Forward => PawnDirection::Backward,
-                        PawnDirection::Backward => PawnDirection::Forward,
-                    });
-                }
-            }
+            update_pawn_direction_at_edge(&mut piece, to);
 
             state.board.set(from, None);
             state.board.set(to, Some(piece));
@@ -272,4 +261,20 @@ pub fn valid_moves_for(state: &GameState, position: Position) -> Vec<Position> {
     }
 
     moves
+}
+
+fn update_pawn_direction_at_edge(piece: &mut Piece, position: Position) {
+    if piece.kind != PieceKind::Pawn {
+        return;
+    }
+
+    let forward = pawn_forward_delta(piece);
+    let next_y = position.y as isize + forward;
+
+    if next_y < 0 || next_y >= BOARD_SIZE as isize {
+        piece.pawn_dir = Some(match piece.pawn_dir.unwrap() {
+            PawnDirection::Forward => PawnDirection::Backward,
+            PawnDirection::Backward => PawnDirection::Forward,
+        });
+    }
 }

@@ -45,7 +45,7 @@ fn setup_board(mut commands: Commands, asset_server: Res<AssetServer>) {
             let world_x = x as f32 * CELL_SIZE - HALF_BOARD_SIZE + CELL_SIZE / 2.0;
             let world_y = y as f32 * CELL_SIZE - HALF_BOARD_SIZE + CELL_SIZE / 2.0;
 
-            commands.spawn((
+            /*commands.spawn((
                 Sprite {
                     color,
                     custom_size: Some(Vec2::splat(CELL_SIZE as f32)),
@@ -53,6 +53,14 @@ fn setup_board(mut commands: Commands, asset_server: Res<AssetServer>) {
                 },
                 Transform::from_xyz(world_x, world_y, 0.0),
                 GlobalTransform::default(),
+            ));*/
+
+            let board_handle = asset_server.as_ref().load("sprites/board.png");
+
+            commands.spawn((
+                Sprite::from_image(board_handle),
+                Transform::from_xyz(world_x, world_y, 0.0).with_scale(Vec3::splat(0.05)),
+                GlobalTransform::default()
             ));
         }
     }
