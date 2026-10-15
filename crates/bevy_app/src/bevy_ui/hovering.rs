@@ -41,7 +41,7 @@ fn update_highlight(
 
     if let Some(world) = cursor_to_world(&windows, &camera_q) {
         if let Some((x, y)) = world_to_cell(world) {
-            transform.translation = cell_to_world(x, y).extend(PIECE_Z);
+            transform.translation = cell_to_world(x, y).extend(HIGHLIGHT_Z);
             *visibility = Visibility::Visible;
             return;
         }
@@ -98,7 +98,7 @@ fn show_valid_moves(
         if is_capture {
             commands.spawn((
                 Sprite {
-                    color: MOVE_INDICATOR_FREE,
+                    color: MOVE_INDICATOR_CAPTURED,
                     custom_size: Some(Vec2::splat(CAPTURE_OVERLAY_SIZE)),
                     ..default()
                 },
@@ -109,7 +109,7 @@ fn show_valid_moves(
             commands.spawn((
                 Sprite {
                     image: asset_server.load("cell_highlight.png"),
-                    color: MOVE_INDICATOR_CAPTURED,
+                    color: MOVE_INDICATOR_FREE,
                     custom_size: Some(Vec2::splat(MOVE_INDICATOR_SIZE)),
                     ..default()
                 },

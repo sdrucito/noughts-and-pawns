@@ -1,6 +1,6 @@
 use bevy::camera::ScalingMode;
 use bevy::prelude::*;
-use crate::bevy_ui::constants::{APP_SIZE, BACKGROUND_Z, BLACK_QUAD, CELL_SIZE, GRID_NUMBER, HALF_BOARD_SIZE, WHITE_QUAD};
+use crate::bevy_ui::constants::{APP_SIZE, BACKGROUND_Z, BOARD_SIZE};
 
 pub struct BoardPlugin;
 
@@ -34,34 +34,17 @@ fn setup_board(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 
     // Board
-    for y in 0..GRID_NUMBER {
-        for x in 0..GRID_NUMBER {
-            let color = if (x + y) % 2 == 0 {
-                BLACK_QUAD
-            } else {
-                WHITE_QUAD
-            };
+    let board_handle = asset_server.as_ref().load("sprites/board.png");
 
-            let world_x = x as f32 * CELL_SIZE - HALF_BOARD_SIZE + CELL_SIZE / 2.0;
-            let world_y = y as f32 * CELL_SIZE - HALF_BOARD_SIZE + CELL_SIZE / 2.0;
-
-            /*commands.spawn((
-                Sprite {
-                    color,
-                    custom_size: Some(Vec2::splat(CELL_SIZE as f32)),
-                    ..default()
-                },
-                Transform::from_xyz(world_x, world_y, 0.0),
-                GlobalTransform::default(),
-            ));*/
-
-            let board_handle = asset_server.as_ref().load("sprites/board.png");
-
-            commands.spawn((
-                Sprite::from_image(board_handle),
-                Transform::from_xyz(world_x, world_y, 0.0).with_scale(Vec3::splat(0.05)),
-                GlobalTransform::default()
-            ));
-        }
-    }
+    commands.spawn((
+        Sprite {
+            image: board_handle,
+            custom_size: Some(Vec2::splat(BOARD_SIZE)),
+            ..default()
+        },
+        Transform::from_xyz(0.0, 0.0, 0.0),
+        GlobalTransform::default(),
+    ));
 }
+
+

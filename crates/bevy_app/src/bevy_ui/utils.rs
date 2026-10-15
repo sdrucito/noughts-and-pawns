@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::bevy_ui::constants::{CELL_SIZE, HALF_BOARD_SIZE};
+use crate::bevy_ui::constants::{CELL_SIZE, GRID_NUMBER, HALF_BOARD_SIZE};
 
 pub fn cursor_to_world(windows: &Query<&Window>, camera_q: &Query<(&Camera, &GlobalTransform)>) -> Option<Vec2> {
     let window = windows.single().ok()?;
@@ -13,7 +13,7 @@ pub fn world_to_cell(world: Vec2) -> Option<(i32, i32)> {
     let x = ((world.x + HALF_BOARD_SIZE) / CELL_SIZE).floor() as i32;
     let y = ((world.y + HALF_BOARD_SIZE) / CELL_SIZE).floor() as i32;
 
-    if x >= 0 && x < 4 && y >= 0 && y < 4 {
+    if x >= 0 && x < GRID_NUMBER as i32 && y >= 0 && y < GRID_NUMBER as i32 {
         Some((x, y))
     } else {
         None
