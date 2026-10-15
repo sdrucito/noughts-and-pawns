@@ -165,4 +165,74 @@ mod rules_tests {
         assert!(moves.contains(&Position { x: 2, y: 1 }));
     }
 
+    /// Tests out of board
+    #[test]
+    fn cannot_place_piece_outside_board() {
+        let mut state = GameState::new();
+
+        let result = apply_move(
+            &mut state,
+            Move::PlacePiece {
+                kind: PieceKind::Rook,
+                position: Position { x: 4, y: 0 },
+            },
+        );
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn cannot_move_piece_outside_board() {
+        let mut state = GameState::new();
+
+        apply_move(
+            &mut state,
+            Move::PlacePiece {
+                kind: PieceKind::Rook,
+                position: Position { x: 0, y: 0 },
+            },
+        )
+            .unwrap();
+
+        state.current_player = Player::White;
+
+        let result = apply_move(
+            &mut state,
+            Move::MovePiece {
+                from: Position { x: 0, y: 0 },
+                to: Position { x: 4, y: 0 },
+            },
+        );
+
+        assert!(result.is_err());
+    }
+    /// A piece cannot be moved from an empty source cell
+    #[test]
+    fn cannot_move_from_empty_cell() {
+        // Given
+        let mut state = GameState::new();
+
+        // When
+        let result = apply_move(&mut state, Move::MovePiece {
+            from: Position { x: 0, y: 0 },
+            to: Position { x: 0, y: 1 },
+        });
+
+        // Then
+        assert!(result.is_err());
+    }
+
+    /// Asking for valid moves outside the board returns no moves
+    #[test]
+    fn valid_moves_outside_board_are_empty() {
+        // Given
+        let state = GameState::new();
+
+        // When
+        let moves = valid_moves_for(&state, Position { x: 4, y: 0 }, );
+
+        // Then
+        assert!(moves.is_empty());
+    }
+
 }

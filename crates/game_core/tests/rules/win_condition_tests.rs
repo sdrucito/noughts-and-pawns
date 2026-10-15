@@ -4,7 +4,7 @@ use game_core::game::player::Player;
 
 mod win_condition_tests {
     use game_core::game::piece::Piece;
-    use game_core::game::rules::check_win_condition;
+    use game_core::game::rules::{apply_move, check_win_condition, Move};
     use super::*;
 
     /// A player wins with four pieces aligned horizontally
@@ -108,4 +108,105 @@ mod win_condition_tests {
         assert_eq!(check_win_condition(&state, Player::White), None);
     }
 
+    /// Placing the fourth aligned piece updates the game's winner
+    #[test]
+    fn placing_piece_can_trigger_win() {
+        // Given
+        let mut state = GameState::new();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Pawn,
+            position: Position { x: 0, y: 0 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Pawn,
+            position: Position { x: 0, y: 2 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Rook,
+            position: Position { x: 1, y: 0 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Rook,
+            position: Position { x: 1, y: 2 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Knight,
+            position: Position { x: 2, y: 0 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Knight,
+            position: Position { x: 2, y: 2 },
+        }).unwrap();
+
+        // When
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Bishop,
+            position: Position { x: 3, y: 0 },
+        }).unwrap();
+
+        // Then
+        assert_eq!(state.winner, Some(Player::White));
+    }
+
+    /// Moving a piece into the fourth aligned position updates the game's winner
+    #[test]
+    fn moving_piece_can_trigger_win() {
+        // Given
+        let mut state = GameState::new();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Pawn,
+            position: Position { x: 0, y: 0 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Pawn,
+            position: Position { x: 0, y: 3 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Bishop,
+            position: Position { x: 1, y: 0 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Bishop,
+            position: Position { x: 1, y: 2 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Knight,
+            position: Position { x: 2, y: 0 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Knight,
+            position: Position { x: 2, y: 3 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Rook,
+            position: Position { x: 3, y: 1 },
+        }).unwrap();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Rook,
+            position: Position { x: 3, y: 2 },
+        }).unwrap();
+
+        // When
+        apply_move(&mut state, Move::MovePiece {
+            from: Position { x: 3, y: 1 },
+            to: Position { x: 3, y: 0 },
+        }).unwrap();
+
+        // Then
+        assert_eq!(state.winner, Some(Player::White));
+    }
 }

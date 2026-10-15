@@ -8,6 +8,11 @@ pub struct Position {
     pub x: usize,
     pub y: usize,
 }
+impl Position {
+    pub fn is_valid(&self) -> bool {
+        self.x < BOARD_SIZE && self.y < BOARD_SIZE
+    }
+}
 
 pub struct Board {
     cells: [[Option<Piece>; BOARD_SIZE]; BOARD_SIZE],

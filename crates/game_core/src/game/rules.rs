@@ -17,6 +17,9 @@ pub enum Move {
 pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
     match mv {
         Move::PlacePiece { kind, position } => {
+            if !position.is_valid() {
+                return Err("Target position is outside the board".to_string());
+            }
             if !state.board.is_empty_cell(position) {
                 return Err("Target cell is not empty".to_string());
             }
@@ -50,6 +53,9 @@ pub fn apply_move(state: &mut GameState, mv: Move) -> Result<(), String> {
             Ok(())
         }
         Move::MovePiece { from, to } => {
+            if !from.is_valid() || !to.is_valid() {
+                return Err("Source or target position is outside the board".to_string());
+            }
             validate_move_piece(state, from, to)?;
 
             let mut piece = state.board.get(from).unwrap();
@@ -237,6 +243,9 @@ fn cell_belongs_to_player(state: &GameState, x: usize, y: usize, player: Player)
 }
 
 pub fn valid_moves_for(state: &GameState, position: Position) -> Vec<Position> {
+    if !position.is_valid() {
+        return vec![];
+    }
     let Some(piece) = state.board.get(position) else {
         return vec![];
     };

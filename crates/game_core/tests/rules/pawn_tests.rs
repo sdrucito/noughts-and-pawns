@@ -241,4 +241,42 @@ mod pawn_tests {
         assert!(result.is_ok());
     }
 
+    /// A white pawn placed directly on its forward edge reverses direction immediately
+    #[test]
+    fn white_pawn_placed_on_forward_edge_moves_backward() {
+        let mut state = GameState::new();
+
+        apply_move(&mut state, Move::PlacePiece {
+                kind: PieceKind::Pawn,
+                position: Position { x: 1, y: 3 },
+            }).unwrap();
+
+        state.current_player = Player::White;
+        let result = apply_move(&mut state, Move::MovePiece {
+                from: Position { x: 1, y: 3 },
+                to: Position { x: 1, y: 2 },
+            });
+
+        assert!(result.is_ok());
+    }
+    /// A black pawn placed directly on its forward edge reverses direction immediately
+    #[test]
+    fn black_pawn_placed_on_forward_edge_moves_backward() {
+        let mut state = GameState::new();
+
+        state.current_player = Player::Black;
+        apply_move(&mut state, Move::PlacePiece {
+                kind: PieceKind::Pawn,
+                position: Position { x: 1, y: 0 },
+            }).unwrap();
+
+        state.current_player = Player::Black;
+        let result = apply_move(&mut state, Move::MovePiece {
+                from: Position { x: 1, y: 0 },
+                to: Position { x: 1, y: 1 },
+            });
+
+        assert!(result.is_ok());
+    }
+
 }

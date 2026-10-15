@@ -117,4 +117,23 @@ mod knight_tests {
         assert!(result.is_err());
     }
 
+    /// A knight can move two squares horizontally and one square vertically
+    #[test]
+    fn knight_can_move_two_horizontal_one_vertical() {
+        let mut state = GameState::new();
+
+        apply_move(&mut state, Move::PlacePiece {
+            kind: PieceKind::Knight,
+            position: Position { x: 1, y: 1 },
+        }).unwrap();
+
+        state.current_player = Player::White;
+        let result = apply_move(&mut state, Move::MovePiece {
+            from: Position { x: 1, y: 1 },
+            to: Position { x: 3, y: 2 },
+        });
+
+        assert!(result.is_ok());
+    }
+
 }
