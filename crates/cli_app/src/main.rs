@@ -29,15 +29,20 @@ fn main() {
         };
 
         match apply_move(&mut state, mv) {
-            Ok(_) => {}
-            Err(e) => {
-                println!("{}\n", e);
-                if e.contains("wins the game") {
+            Ok(()) => {
+                if let Some(winner) = state.winner {
+                    print_game_state(&state);
+                    println!("{:?} wins the game!\n", winner);
+
                     println!("Press ENTER to exit...");
                     let mut dummy = String::new();
                     let _ = io::stdin().read_line(&mut dummy);
+
                     break;
                 }
+            }
+            Err(e) => {
+                println!("Error: {}\n", e);
             }
         }
     }
