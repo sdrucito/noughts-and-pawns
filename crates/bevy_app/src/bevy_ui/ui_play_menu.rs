@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use crate::AppState;
 use crate::bevy_ui::constants::{HOVERED_BUTTON_COLOR, NORMAL_BUTTON_COLOR, PRESSED_BUTTON_COLOR};
 use crate::bevy_ui::ui_toasts::{spawn_toast, update_toasts};
+use crate::bevy_ui::ui_button::{spawn_text_button, ButtonTextStyle};
 
 pub struct PlayMenuPlugin;
 
@@ -48,6 +49,16 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let heading_font = asset_server.load("fonts/Jacquard12-Regular.ttf");
     let simple_font = asset_server.load("fonts/MedodicaRegular.otf");
 
+    let button_idle = asset_server.load("ui/Button.png");
+    let button_hover = asset_server.load("ui/Button_hover.png");
+    let button_pressed = asset_server.load("ui/Button_press.png");
+
+    let button_text_style = ButtonTextStyle {
+        font_size: 30.0,
+        color: Color::WHITE,
+        text_shadow: None,
+    };
+
     commands
         .spawn((
             Node {
@@ -63,8 +74,9 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
             PlayMenu,
         ))
         .with_children(|parent| {
+            // Heading
             parent.spawn((
-                Text::new("Set game"),
+                Text::new("Play"),
                 TextFont {
                     font: heading_font.clone(),
                     font_size: 60.0,
@@ -73,80 +85,7 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextColor(Color::WHITE),
             ));
 
-            spawn_play_button(parent, simple_font.clone(), "Vs Player", PlayMenuButton::VsPlayer);
-
-            parent
-                .spawn((
-                    Node {
-                        width: Val::Px(256.0),
-                        height: Val::Px(64.0),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        position_type: PositionType::Relative,
-                        ..default()
-                    },
-                ))
-                .with_children(|parent| {
-                    parent.spawn((
-                        Button,
-                        Node {
-                            width: Val::Px(256.0),
-                            height: Val::Px(64.0),
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },
-                        BackgroundColor(NORMAL_BUTTON_COLOR),
-                        PlayMenuButton::VsAI,
-                    ))
-                        .with_children(|parent| {
-                            parent.spawn((
-                                Text::new("Vs AI"),
-                                TextFont {
-                                    font: simple_font.clone(),
-                                    font_size: 30.0,
-                                    ..default()
-                                },
-                                TextColor(Color::WHITE),
-                            ));
-                        });
-
-                    parent.spawn(Node {
-                        position_type: PositionType::Absolute,
-                        right: Val::Px(-100.0),
-                        justify_content: JustifyContent::Center,
-                        flex_direction: FlexDirection::Column,
-                        align_items: AlignItems::Center,
-                        row_gap: Val::Px(8.0),
-                        ..default()
-                    })
-                        .with_children(|col| {
-
-                            col.spawn((
-                                Button,
-                                Node {
-                                    width: Val::Px(16.0),
-                                    height: Val::Px(16.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    ..default()
-                                },
-                                BackgroundColor(Color::srgb(0.1,0.1,0.1)),
-                                PlayAsBlackCheckbox { enabled: false },
-                                CheckboxSquare,
-                            ));
-                            col.spawn((
-                                Text::new("Play as Black"),
-                                TextFont {
-                                    font: simple_font.clone(),
-                                    font_size: 18.0,
-                                    ..default()
-                                },
-                                TextColor(Color::WHITE),
-                            ));
-                        });
-                });
-
+            // Timer selector
             parent
                 .spawn((
                     Button,
@@ -171,6 +110,7 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                         },
                         TextColor(Color::WHITE),
                     ));
+
                     parent.spawn((
                         Text::new(TIMER_VALUES[0]),
                         TextFont {
@@ -180,6 +120,7 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                         },
                         TextColor(Color::WHITE),
                     ));
+
                     parent.spawn((
                         Text::new(">"),
                         TextFont {
@@ -191,73 +132,111 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ));
                 });
 
-            spawn_play_button(parent, simple_font.clone(), "Back", PlayMenuButton::Back);
-        });
-}
-
-fn spawn_play_button(parent: &mut ChildSpawnerCommands, font: Handle<Font>, label: &str,
-                     button_type: PlayMenuButton) {
-    parent
-        .spawn((
-            Button,
-            Node {
-                width: Val::Px(256.0),
-                height: Val::Px(64.0),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                margin: UiRect::top(Val::Px(8.0)),
-                ..default()
-            },
-            BackgroundColor(NORMAL_BUTTON_COLOR),
-            button_type,
-        ))
-        .with_children(|parent| {
-            parent.spawn((
-                Text::new(label),
-                TextFont {
-                    font,
-                    font_size: 30.0,
+            // Two Players
+            spawn_text_button(parent, simple_font.clone(), "Two Players", PlayMenuButton::VsPlayer,
+                Node {
+                    width: Val::Px(256.0),
+                    height: Val::Px(64.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
                     ..default()
                 },
-                TextColor(Color::WHITE),
-            ));
+                &button_idle, &button_hover, &button_pressed, button_text_style.clone()
+            );
+
+            // Single Player
+            spawn_text_button(parent, simple_font.clone(), "Single Player", PlayMenuButton::VsAI,
+                Node {
+                    width: Val::Px(256.0),
+                    height: Val::Px(64.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+                &button_idle, &button_hover, &button_pressed, button_text_style.clone()
+            );
+
+            // Play as Black option
+            parent
+                .spawn(Node {
+                    width: Val::Px(256.0),
+                    height: Val::Px(32.0),
+                    flex_direction: FlexDirection::Row,
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    column_gap: Val::Px(8.0),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent.spawn((
+                        Button,
+                        Node {
+                            width: Val::Px(16.0),
+                            height: Val::Px(16.0),
+                            ..default()
+                        },
+                        BackgroundColor(Color::srgb(0.1, 0.1, 0.1)),
+                        PlayAsBlackCheckbox { enabled: false },
+                        CheckboxSquare,
+                    ));
+
+                    parent.spawn((
+                        Text::new("Play as Black"),
+                        TextFont {
+                            font: simple_font.clone(),
+                            font_size: 18.0,
+                            ..default()
+                        },
+                        TextColor(Color::WHITE),
+                    ));
+                });
+
+            // Back
+            spawn_text_button(parent, simple_font.clone(), "Back", PlayMenuButton::Back,
+                Node {
+                    width: Val::Px(256.0),
+                    height: Val::Px(64.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    margin: UiRect::top(Val::Px(8.0)),
+                    ..default()
+                },
+                &button_idle, &button_hover, &button_pressed, button_text_style
+            );
         });
 }
 
 fn play_menu_interactions(
-    mut button_query: Query<
-        (
-            Entity,
-            &Interaction,
-            &mut BackgroundColor,
-            Option<&PlayMenuButton>,
-            Option<&mut PlayAsBlackCheckbox>,
-            Option<&mut TimerSelector>,
-            Option<&Children>,
-        ),
-        (Changed<Interaction>, With<Button>),
-    >,
-    mut text_query: Query<&mut Text>, mut next_state: ResMut<NextState<AppState>>,
-    mut commands: Commands, asset_server: Res<AssetServer>) {
+        mut button_query: Query<
+            (
+                &Interaction,
+                Option<&mut BackgroundColor>,
+                Option<&PlayMenuButton>,
+                Option<&mut PlayAsBlackCheckbox>,
+                Option<&mut TimerSelector>,
+                Option<&Children>,
+            ),
+            (Changed<Interaction>, With<Button>),
+        >,
+        mut text_query: Query<&mut Text>,
+        mut next_state: ResMut<NextState<AppState>>,
+        mut commands: Commands,
+        asset_server: Res<AssetServer>,
+    ) {
+        for (interaction, bg_color, play_button, checkbox, timer_selector, children)
+        in &mut button_query
+        {
+            if let Some(mut bg_color) = bg_color {
+                *bg_color = match *interaction {
+                    Interaction::Pressed => BackgroundColor(PRESSED_BUTTON_COLOR),
+                    Interaction::Hovered => BackgroundColor(HOVERED_BUTTON_COLOR),
+                    Interaction::None => BackgroundColor(NORMAL_BUTTON_COLOR),
+                };
+            }
 
-    for (_, interaction, mut bg_color, play_button, checkbox, timer_selector, children) in
-        &mut button_query
-    {
-        match *interaction {
-            Interaction::Pressed => {
-                *bg_color = BackgroundColor(PRESSED_BUTTON_COLOR);
+            if *interaction != Interaction::Pressed {
+                continue;
             }
-            Interaction::Hovered => {
-                *bg_color = BackgroundColor(HOVERED_BUTTON_COLOR);
-            }
-            Interaction::None => {
-                *bg_color = BackgroundColor(NORMAL_BUTTON_COLOR);
-            }
-        }
-
-        if *interaction != Interaction::Pressed {
-            continue;
-        }
 
         if let Some(button_type) = play_button {
             match button_type {

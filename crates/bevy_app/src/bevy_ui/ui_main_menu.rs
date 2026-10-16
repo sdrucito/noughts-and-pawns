@@ -1,9 +1,8 @@
 use bevy::prelude::*;
-use bevy::sprite::Text2dShadow;
 use crate::AppState;
 use crate::bevy_ui::constants::{TEXT_COLOR};
 use crate::bevy_ui::ui_toasts::{spawn_toast, update_toasts};
-
+use crate::bevy_ui::ui_button::{spawn_text_button, ButtonTextStyle};
 pub struct MainMenuPlugin;
 impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
@@ -22,12 +21,6 @@ enum MainMenuButton {
     Options,
     Quit,
 }
-#[derive(Component)]
-struct ButtonVisuals {
-    idle: Handle<Image>,
-    hover: Handle<Image>,
-    pressed: Handle<Image>,
-}
 fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     let heading_font = asset_server.load("fonts/Jacquard12-Regular.ttf");
@@ -38,6 +31,15 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let button_pressed = asset_server.load("ui/Button_press.png");
 
     let bg= asset_server.load("ui/Background.png");
+    let button_text_style = ButtonTextStyle {
+        font_size: 30.0,
+        color: TEXT_COLOR,
+        text_shadow: Some(TextShadow {
+            offset: Vec2::new(2.0, 2.0),
+            ..default()
+        }),
+    };
+
     commands.spawn((
         Node {
             width: Val::Percent(100.0),
@@ -64,85 +66,51 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextShadow::default(),
             ));
 
-            spawn_button(parent, simple_font.clone(), "Play", MainMenuButton::Play, &button_idle, &button_hover, &button_pressed);
-            spawn_button(parent, simple_font.clone(), "Options", MainMenuButton::Options, &button_idle, &button_hover, &button_pressed);
-            spawn_button(parent, simple_font.clone(), "Quit", MainMenuButton::Quit, &button_idle, &button_hover, &button_pressed);
+            spawn_text_button(parent, simple_font.clone(), "Play", MainMenuButton::Play, main_menu_button_node(),
+                &button_idle, &button_hover, &button_pressed, button_text_style.clone());
+            spawn_text_button(parent, simple_font.clone(), "Options", MainMenuButton::Options, main_menu_button_node(),
+                &button_idle, &button_hover, &button_pressed, button_text_style.clone());
+            spawn_text_button(parent, simple_font.clone(), "Quit", MainMenuButton::Quit, main_menu_button_node(),
+                &button_idle, &button_hover, &button_pressed, button_text_style);
         });
 }
 
-fn spawn_button(parent: &mut ChildSpawnerCommands, font: Handle<Font>, label: &str, button_type: MainMenuButton,
-                idle: &Handle<Image>, hover: &Handle<Image>, pressed: &Handle<Image>,) {
-    parent.spawn((
-        Button,
-        Node {
-            width: Val::Px(192.0),
-            height: Val::Px(64.0),
-            margin: UiRect::all(Val::Px(30.0)),
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::Center,
-            ..default()
-        },
-        ImageNode::new(idle.clone()),
-        ButtonVisuals {
-            idle: idle.clone(),
-            hover: hover.clone(),
-            pressed: pressed.clone(),
-        },        button_type,
-    ))
-        .with_children(|parent| {
-            parent.spawn((
-                Text::new(label),
-                TextFont {
-                    font,
-                    font_size: 30.0,
-                    ..default()
-                },
-                TextColor(TEXT_COLOR),
-                TextShadow{
-                    offset: Vec2::new(2.0,2.0),
-                    ..default()
-                }
-            ));
-        });
+fn main_menu_button_node() -> Node {
+    Node {
+        width: Val::Px(192.0),
+        height: Val::Px(64.0),
+        margin: UiRect::all(Val::Px(30.0)),
+        justify_content: JustifyContent::Center,
+        align_items: AlignItems::Center,
+        ..default()
+    }
 }
 
 fn menu_buttons(
-    mut interaction_query: Query<
-        (&Interaction, &MainMenuButton, &ButtonVisuals, &mut ImageNode),
-        (Changed<Interaction>, With<Button>),
-    >,
+    interaction_query: Query<(&Interaction, &MainMenuButton), (Changed<Interaction>, With<Button>)>,
     mut next_state: ResMut<NextState<AppState>>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
-    for (interaction, button_type, visuals, mut ui_image) in &mut interaction_query {
-        match *interaction {
-            Interaction::Pressed => {
-                ui_image.image = visuals.pressed.clone();
-            }
-            Interaction::Hovered => {
-                ui_image.image = visuals.hover.clone();
-            }
-            Interaction::None => {
-                ui_image.image = visuals.idle.clone();
-            }
+    for (interaction, button_type) in &interaction_query {
+        if *interaction != Interaction::Pressed {
+            continue;
         }
 
-        if *interaction == Interaction::Pressed {
-            match button_type {
-                MainMenuButton::Play => {
-                    next_state.set(AppState::PlayMenu);
-                }
-                MainMenuButton::Options => {
-                    spawn_toast(&mut commands, &asset_server, "Options not implemented yet", 1.5, 0.8); //TODO
-                }
-                MainMenuButton::Quit => {
-                    std::process::exit(0);
-                }
+        match button_type {
+            MainMenuButton::Play => {
+                next_state.set(AppState::PlayMenu);
+            }
+            MainMenuButton::Options => {
+                spawn_toast(&mut commands, &asset_server, "Options not implemented yet", 1.5, 0.8, );
+            }
+            MainMenuButton::Quit => {
+                std::process::exit(0);
             }
         }
     }
 }
+
 fn cleanup_main_menu(
     mut commands: Commands,
     query: Query<Entity, With<MainMenu>>,

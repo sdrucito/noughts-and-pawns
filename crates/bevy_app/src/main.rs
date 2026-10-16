@@ -8,6 +8,7 @@ use crate::bevy_ui::game_flow::GamePlugin;
 use crate::bevy_ui::ui_game_over::GameOverPlugin;
 use crate::bevy_ui::ui_main_menu::MainMenuPlugin;
 use crate::bevy_ui::ui_play_menu::PlayMenuPlugin;
+use crate::bevy_ui::ui_button::UIButtonPlugin;
 
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 enum AppState {
@@ -38,6 +39,6 @@ fn main() {
         )
 
         .init_state::<AppState>()
-        .add_plugins((MainMenuPlugin, PlayMenuPlugin, GamePlugin, GameOverPlugin))
+        .add_plugins((MainMenuPlugin, PlayMenuPlugin, UIButtonPlugin, GamePlugin, GameOverPlugin))
         .run();
 }
