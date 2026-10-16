@@ -1,10 +1,13 @@
 use bevy::color::Color;
 
 pub const APP_SIZE: u32= 640;
+pub const WINDOW_WIDTH: u32 = 960;
+pub const WINDOW_HEIGHT: u32 = 600;
 pub(crate) const GRID_NUMBER: u32 = 4;
 
 pub(crate) const CELL_SIZE: f32 = 64.0;
 pub(crate) const BOARD_SIZE: f32 = CELL_SIZE * GRID_NUMBER as f32;
+
 pub(crate) const HALF_BOARD_SIZE: f32 = BOARD_SIZE / 2.0;
 
 pub(crate) const WHITE_RESERVE_X: f32 = -192.0;

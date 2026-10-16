@@ -1,6 +1,6 @@
 use bevy::camera::ScalingMode;
 use bevy::prelude::*;
-use crate::bevy_ui::constants::{APP_SIZE, BACKGROUND_Z, BOARD_SIZE};
+use crate::bevy_ui::constants::{WINDOW_WIDTH, WINDOW_HEIGHT, BACKGROUND_Z, BOARD_SIZE};
 
 pub struct BoardPlugin;
 
@@ -15,8 +15,8 @@ fn setup_board(mut commands: Commands, asset_server: Res<AssetServer>) {
         Camera2d,
         Projection::Orthographic(OrthographicProjection {
             scaling_mode: ScalingMode::Fixed {
-                width: APP_SIZE as f32,
-                height: APP_SIZE as f32,
+                width: WINDOW_WIDTH as f32,
+                height: WINDOW_HEIGHT as f32,
             },
             ..OrthographicProjection::default_2d()
         }),

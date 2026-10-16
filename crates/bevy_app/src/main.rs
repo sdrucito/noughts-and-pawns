@@ -3,7 +3,7 @@ mod bevy_ui;
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
-use crate::bevy_ui::constants::APP_SIZE;
+use crate::bevy_ui::constants::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use crate::bevy_ui::game_flow::GamePlugin;
 use crate::bevy_ui::ui_game_over::GameOverPlugin;
 use crate::bevy_ui::ui_main_menu::MainMenuPlugin;
@@ -28,7 +28,7 @@ fn main() {
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     title: "Noughts and Pawns".to_string(),
-                    resolution: WindowResolution::new(APP_SIZE, APP_SIZE),
+                    resolution: WindowResolution::new(WINDOW_WIDTH, WINDOW_HEIGHT),
                     resizable: false,
                     ..default()
                 }),
