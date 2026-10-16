@@ -11,6 +11,7 @@ pub(crate) const WHITE_RESERVE_X: f32 = -192.0;
 pub(crate) const BLACK_RESERVE_X: f32 = 192.0;
 pub(crate) const BACKGROUND_Z: f32 = -10.0;
 pub(crate) const PIECE_Z:f32 = 10.0;
+pub(crate) const DRAGGING_PIECE_Z: f32 = PIECE_Z + 1.0;
 pub(crate) const HIGHLIGHT_Z:f32 = 5.0;
 
 

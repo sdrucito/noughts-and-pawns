@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use game_core::game::game_state::Position;
 use game_core::game::rules::Move;
-use crate::bevy_ui::constants::PIECE_Z;
+use crate::bevy_ui::constants::{DRAGGING_PIECE_Z, PIECE_Z};
 use crate::bevy_ui::pieces::{reserve_position, BoardPosition, PieceVisual};
 use crate::bevy_ui::utils::{cell_to_world, cursor_to_world, world_to_cell};
 use crate::bevy_ui::game_flow::{GameOverEvent, GameStateRes};
@@ -50,7 +50,7 @@ fn select_piece(
     buttons: Res<ButtonInput<MouseButton>>,
     windows: Query<&Window>,
     camera_q: Query<(&Camera, &GlobalTransform)>,
-    pieces: Query<(Entity, &Transform, &PieceVisual)>,
+    mut pieces: Query<(Entity, &mut Transform, &PieceVisual)>,
     mut drag_state: ResMut<DragState>,
     game_state: Res<GameStateRes>,
 ) {
@@ -63,7 +63,7 @@ fn select_piece(
     };
 
     // Selection
-    for (entity, transform, visual) in pieces.iter() {
+    for (entity, mut transform, visual) in &mut pieces {
         if world.distance(transform.translation.truncate()) < 32.0 {
             if visual.owner != game_state.state.current_player {
                 warn!("Not your turn! It's {:?}'s turn.", game_state.state.current_player);
@@ -72,6 +72,7 @@ fn select_piece(
 
             drag_state.selected = Some(entity);
             drag_state.original_position = Some(transform.translation);
+            transform.translation.z = DRAGGING_PIECE_Z;
 
             info!("{:?} selected a {:?}", visual.owner, visual.kind);
 

@@ -53,34 +53,60 @@ pub struct ValidMovesPlugin;
 
 impl Plugin for ValidMovesPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, show_valid_moves.run_if(in_state(AppState::InGame)));
+        app
+            .init_resource::<ValidMovesState>()
+            .add_systems(Update, show_valid_moves.run_if(in_state(AppState::InGame)));
     }
 }
 #[derive(Component)]
 struct MoveIndicator;
+#[derive(Resource, Default)]
+struct ValidMovesState {
+    hovered_piece: Option<Entity>,
+}
 fn show_valid_moves(
     mut commands: Commands,
     windows: Query<&Window>,
     camera_q: Query<(&Camera, &GlobalTransform)>,
-    pieces: Query<(Entity, &PieceVisual, &BoardPosition, &Transform)>,
+    pieces: Query<(Entity, &PieceVisual, Option<&BoardPosition>, &Transform)>,
     indicators: Query<Entity, With<MoveIndicator>>,
     game_state: Res<GameStateRes>,
     asset_server: Res<AssetServer>,
+    mut valid_moves_state: ResMut<ValidMovesState>,
 ) {
-    // Cleanup
+    let valid_moves_state: &mut ValidMovesState = &mut *valid_moves_state; // fix IDE error
+
+    let hovered_piece = if let Some(world) = cursor_to_world(&windows, &camera_q) {
+        pieces.iter().filter(|(_, _, _, transform)| {
+                world.distance(transform.translation.truncate()) < 32.0
+            }).max_by(|a, b| {
+                a.3.translation.z.total_cmp(&b.3.translation.z)
+            })
+    } else {
+        None
+    };
+
+    let hovered_entity = hovered_piece.as_ref().map(|(entity, _, _, _)| *entity);
+    if hovered_entity == valid_moves_state.hovered_piece && !game_state.is_changed() {
+        return;
+    }
+
+    valid_moves_state.hovered_piece = hovered_entity;
+
     for entity in indicators.iter() {
         commands.entity(entity).despawn();
     }
 
-    let Some(world) = cursor_to_world(&windows, &camera_q) else { return; };
-    let hovered_piece = pieces.iter().find(|(_, _, _, transform)| {
-        world.distance(transform.translation.truncate()) < 32.0
-    });
-    let Some((_, visual, board_pos, _)) = hovered_piece else { return; };
+
+    let Some((_, visual, board_pos, _)) = hovered_piece else {
+        return;
+    };
     if visual.owner != game_state.state.current_player {
         return;
     }
-
+    let Some(board_pos) = board_pos else {
+        return;
+    };
     let piece_position = Position {
         x: board_pos.x as usize,
         y: board_pos.y as usize,
