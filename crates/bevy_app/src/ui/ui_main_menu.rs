@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use crate::AppState;
-use crate::shared::constants::{TEXT_COLOR};
+use crate::shared::constants::{TEXT_COLOR1, TEXT_COLOR2};
 use crate::ui::ui_toasts::{spawn_toast, update_toasts};
 use crate::ui::ui_button::{spawn_text_button, ButtonTextStyle};
 pub struct MainMenuPlugin;
@@ -24,16 +24,28 @@ enum MainMenuButton {
 fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     let heading_font = asset_server.load("fonts/Jacquard12-Regular.ttf");
-    let simple_font = asset_server.load("fonts/MedodicaRegular.otf");
+    let simple_font = asset_server.load("fonts/Fredoka-Bold.ttf");
 
-    let button_idle   = asset_server.load("ui/Button.png");
-    let button_hover  = asset_server.load("ui/Button_hover.png");
-    let button_pressed = asset_server.load("ui/Button_press.png");
+    let dark_button_idle   = asset_server.load("ui/Button_idle.png");
+    let dark_button_hover  = asset_server.load("ui/Button_hover.png");
+    let dark_button_pressed = asset_server.load("ui/Button_press.png");
+
+    let light_button_idle   = asset_server.load("ui/light_Button_idle.png");
+    let light_button_hover  = asset_server.load("ui/light_Button_hover.png");
+    let light_button_pressed = asset_server.load("ui/light_Button_press.png");
 
     let bg= asset_server.load("ui/Background.png");
-    let button_text_style = ButtonTextStyle {
+    let button_text_style1 = ButtonTextStyle {
         font_size: 30.0,
-        color: TEXT_COLOR,
+        color: TEXT_COLOR1,
+        text_shadow: Some(TextShadow {
+            offset: Vec2::new(2.0, 2.0),
+            ..default()
+        }),
+    };
+    let button_text_style2 = ButtonTextStyle {
+        font_size: 30.0,
+        color: TEXT_COLOR2,
         text_shadow: Some(TextShadow {
             offset: Vec2::new(2.0, 2.0),
             ..default()
@@ -62,16 +74,16 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                     font_size: 60.0,
                     ..default()
                 },
-                TextColor(TEXT_COLOR),
+                TextColor(TEXT_COLOR2),
                 TextShadow::default(),
             ));
 
             spawn_text_button(parent, simple_font.clone(), "Play", MainMenuButton::Play, main_menu_button_node(),
-                &button_idle, &button_hover, &button_pressed, button_text_style.clone());
+                &dark_button_idle, &dark_button_hover, &dark_button_pressed, button_text_style1.clone());
             spawn_text_button(parent, simple_font.clone(), "Options", MainMenuButton::Options, main_menu_button_node(),
-                &button_idle, &button_hover, &button_pressed, button_text_style.clone());
+                &light_button_idle, &light_button_hover, &light_button_pressed, button_text_style2.clone());
             spawn_text_button(parent, simple_font.clone(), "Quit", MainMenuButton::Quit, main_menu_button_node(),
-                &button_idle, &button_hover, &button_pressed, button_text_style);
+                &light_button_idle, &light_button_hover, &light_button_pressed, button_text_style2);
         });
 }
 

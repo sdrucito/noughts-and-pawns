@@ -30,5 +30,6 @@ pub const MOVE_INDICATOR_CAPTURED: Color = Color::srgba(1.0, 0.0, 0.0, 0.5);
 pub const NORMAL_BUTTON_COLOR: Color  = Color::srgb(0.3, 0.3, 0.3);
 pub const HOVERED_BUTTON_COLOR: Color = Color::srgb(0.5, 0.5, 0.5);
 pub const PRESSED_BUTTON_COLOR: Color = Color::srgb(0.2, 0.6, 0.9);
-pub const TEXT_COLOR: Color  = Color::srgb_u8(230, 236, 255);
+pub const TEXT_COLOR1: Color  = Color::srgb_u8(251, 246, 232);
+pub const TEXT_COLOR2: Color  = Color::srgb_u8(43, 29, 18);
 

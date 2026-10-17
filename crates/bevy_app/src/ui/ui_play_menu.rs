@@ -1,5 +1,7 @@
+use bevy::asset::ErasedAssetLoader;
 use bevy::prelude::*;
 use crate::AppState;
+use crate::shared::constants::{TEXT_COLOR1, TEXT_COLOR2};
 use super::super::shared::constants::{HOVERED_BUTTON_COLOR, NORMAL_BUTTON_COLOR, PRESSED_BUTTON_COLOR};
 use crate::ui::ui_toasts::{spawn_toast, update_toasts};
 use crate::ui::ui_button::{spawn_text_button, ButtonTextStyle};
@@ -47,15 +49,24 @@ const TIMER_VALUES: [&str; 5] = [
 ];
 fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let heading_font = asset_server.load("fonts/Jacquard12-Regular.ttf");
-    let simple_font = asset_server.load("fonts/MedodicaRegular.otf");
+    let simple_font = asset_server.load("fonts/Fredoka-Bold.ttf");
 
-    let button_idle = asset_server.load("ui/Button.png");
-    let button_hover = asset_server.load("ui/Button_hover.png");
-    let button_pressed = asset_server.load("ui/Button_press.png");
+    let dark_button_idle   = asset_server.load("ui/Button_idle.png");
+    let dark_button_hover  = asset_server.load("ui/Button_hover.png");
+    let dark_button_pressed = asset_server.load("ui/Button_press.png");
 
-    let button_text_style = ButtonTextStyle {
+    let light_button_idle   = asset_server.load("ui/light_Button_idle.png");
+    let light_button_hover  = asset_server.load("ui/light_Button_hover.png");
+    let light_button_pressed = asset_server.load("ui/light_Button_press.png");
+
+    let button_text_style1 = ButtonTextStyle {
         font_size: 30.0,
-        color: Color::WHITE,
+        color: TEXT_COLOR1,
+        text_shadow: None,
+    };
+    let button_text_style2 = ButtonTextStyle {
+        font_size: 30.0,
+        color: TEXT_COLOR2,
         text_shadow: None,
     };
 
@@ -141,7 +152,7 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                     align_items: AlignItems::Center,
                     ..default()
                 },
-                &button_idle, &button_hover, &button_pressed, button_text_style.clone()
+                &dark_button_idle, &dark_button_hover, &dark_button_pressed, button_text_style1.clone()
             );
 
             // Single Player
@@ -153,7 +164,7 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                     align_items: AlignItems::Center,
                     ..default()
                 },
-                &button_idle, &button_hover, &button_pressed, button_text_style.clone()
+                &dark_button_idle, &dark_button_hover, &dark_button_pressed, button_text_style1.clone()
             );
 
             // Play as Black option
@@ -201,7 +212,7 @@ fn setup_play_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                     margin: UiRect::top(Val::Px(8.0)),
                     ..default()
                 },
-                &button_idle, &button_hover, &button_pressed, button_text_style
+                &light_button_idle, &light_button_hover, &light_button_pressed, button_text_style2
             );
         });
 }
