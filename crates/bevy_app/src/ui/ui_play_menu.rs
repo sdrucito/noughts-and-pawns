@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use crate::AppState;
-use crate::bevy_ui::constants::{HOVERED_BUTTON_COLOR, NORMAL_BUTTON_COLOR, PRESSED_BUTTON_COLOR};
-use crate::bevy_ui::ui_toasts::{spawn_toast, update_toasts};
-use crate::bevy_ui::ui_button::{spawn_text_button, ButtonTextStyle};
+use super::super::shared::constants::{HOVERED_BUTTON_COLOR, NORMAL_BUTTON_COLOR, PRESSED_BUTTON_COLOR};
+use crate::ui::ui_toasts::{spawn_toast, update_toasts};
+use crate::ui::ui_button::{spawn_text_button, ButtonTextStyle};
 
 pub struct PlayMenuPlugin;
 

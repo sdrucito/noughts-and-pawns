@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use game_core::game::game_state::Position;
-use crate::bevy_ui::constants::{CAPTURE_OVERLAY_SIZE, HIGHLIGHT_CELL, HIGHLIGHT_Z, MOVE_INDICATOR_CAPTURED, MOVE_INDICATOR_FREE, MOVE_INDICATOR_SIZE, MOVE_INDICATOR_Z, PIECE_Z};
-use crate::bevy_ui::pieces::{BoardPosition, PieceVisual};
-use crate::bevy_ui::utils::{cell_to_world, cursor_to_world, world_to_cell};
+use super::super::shared::constants::{CAPTURE_OVERLAY_SIZE, HIGHLIGHT_CELL, HIGHLIGHT_Z, MOVE_INDICATOR_CAPTURED, MOVE_INDICATOR_FREE, MOVE_INDICATOR_SIZE, MOVE_INDICATOR_Z, PIECE_Z};
+use super::super::shared::utils::{cell_to_world, cursor_to_world, world_to_cell};
+use crate::gameplay::pieces::{BoardPosition, PieceVisual};
+use crate::gameplay::game_flow::GameStateRes;
 use crate::AppState;
-use crate::bevy_ui::game_flow::GameStateRes;
 
 pub struct HighlightPlugin;
 impl Plugin for HighlightPlugin {

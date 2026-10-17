@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use game_core::game::piece::PieceKind;
 use game_core::game::player::Player;
 use crate::AppState;
-use crate::bevy_ui::constants::{BLACK_RESERVE_X, WHITE_RESERVE_X, PIECE_Z, CELL_SIZE};
+use super::super::shared::constants::{BLACK_RESERVE_X, WHITE_RESERVE_X, PIECE_Z, CELL_SIZE};
 const RESERVE_LAYOUT: [ReserveSlot; 4] = [
     ReserveSlot { kind: PieceKind::Pawn,   y: 108.0 },
     ReserveSlot { kind: PieceKind::Rook,   y: 36.0 },

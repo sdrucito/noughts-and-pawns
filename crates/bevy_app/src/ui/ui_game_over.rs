@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 use game_core::game::player::Player;
 use crate::AppState;
-use crate::bevy_ui::constants::{
+use crate::shared::constants::{
     NORMAL_BUTTON_COLOR,
     HOVERED_BUTTON_COLOR,
     PRESSED_BUTTON_COLOR,
 };
-use crate::bevy_ui::game_flow::GameOverEvent;
+use crate::gameplay::game_flow::GameOverEvent;
 
 pub struct GameOverPlugin;
 

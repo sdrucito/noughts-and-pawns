@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::bevy_ui::constants::{CELL_SIZE, GRID_NUMBER, HALF_BOARD_SIZE};
+use crate::shared::constants::{CELL_SIZE, GRID_NUMBER, HALF_BOARD_SIZE};
 
 pub fn cursor_to_world(windows: &Query<&Window>, camera_q: &Query<(&Camera, &GlobalTransform)>) -> Option<Vec2> {
     let window = windows.single().ok()?;

@@ -1,14 +1,16 @@
-mod bevy_ui;
+mod gameplay;
+mod ui;
+mod shared;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
-use crate::bevy_ui::constants::{WINDOW_HEIGHT, WINDOW_WIDTH};
-use crate::bevy_ui::game_flow::GamePlugin;
-use crate::bevy_ui::ui_game_over::GameOverPlugin;
-use crate::bevy_ui::ui_main_menu::MainMenuPlugin;
-use crate::bevy_ui::ui_play_menu::PlayMenuPlugin;
-use crate::bevy_ui::ui_button::UIButtonPlugin;
+use crate::shared::constants::{WINDOW_HEIGHT, WINDOW_WIDTH};
+use crate::gameplay::game_flow::GamePlugin;
+use crate::ui::ui_game_over::GameOverPlugin;
+use crate::ui::ui_main_menu::MainMenuPlugin;
+use crate::ui::ui_play_menu::PlayMenuPlugin;
+use crate::ui::ui_button::UIButtonPlugin;
 
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 enum AppState {

@@ -2,10 +2,10 @@ use bevy::prelude::*;
 use game_core::game::game_state::GameState;
 use game_core::game::player::Player;
 use crate::AppState;
-use crate::bevy_ui::board::BoardPlugin;
-use crate::bevy_ui::drag_and_drop::DragAndDropPlugin;
-use crate::bevy_ui::hovering::{HighlightPlugin, ValidMovesPlugin};
-use crate::bevy_ui::pieces::PiecesPlugin;
+use crate::gameplay::board::BoardPlugin;
+use crate::gameplay::drag_and_drop::DragAndDropPlugin;
+use crate::gameplay::hovering::{HighlightPlugin, ValidMovesPlugin};
+use crate::gameplay::pieces::PiecesPlugin;
 
 #[derive(Resource)]
 pub struct GameStateRes {

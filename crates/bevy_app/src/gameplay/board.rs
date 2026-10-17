@@ -1,6 +1,6 @@
 use bevy::camera::ScalingMode;
 use bevy::prelude::*;
-use crate::bevy_ui::constants::{WINDOW_WIDTH, WINDOW_HEIGHT, BACKGROUND_Z, BOARD_SIZE};
+use super::super::shared::constants::{WINDOW_WIDTH, WINDOW_HEIGHT, BACKGROUND_Z, BOARD_SIZE};
 
 pub struct BoardPlugin;
 

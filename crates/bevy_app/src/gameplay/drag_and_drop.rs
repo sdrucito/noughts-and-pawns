@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use game_core::game::game_state::Position;
 use game_core::game::rules::Move;
-use crate::bevy_ui::constants::{DRAGGING_PIECE_Z, PIECE_Z};
-use crate::bevy_ui::pieces::{reserve_position, BoardPosition, PieceVisual};
-use crate::bevy_ui::utils::{cell_to_world, cursor_to_world, world_to_cell};
-use crate::bevy_ui::game_flow::{GameOverEvent, GameStateRes};
+use super::super::shared::constants::{DRAGGING_PIECE_Z, PIECE_Z};
+use super::super::shared::utils::{cell_to_world, cursor_to_world, world_to_cell};
+use crate::gameplay::pieces::{reserve_position, BoardPosition, PieceVisual};
+use crate::gameplay::game_flow::{GameOverEvent, GameStateRes};
 use crate::AppState;
 pub struct DragAndDropPlugin;
 impl Plugin for DragAndDropPlugin {
